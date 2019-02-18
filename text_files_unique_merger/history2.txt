@@ -1,0 +1,105 @@
+cd D:\DK-HP-PA-2000AR\wwwroot\Node_js_client\next_js_static_demo
+D:
+exit
+npm cache verify
+ls D:\DK-HP-PA-2000AR\wwwroot\
+ls D:\DK-HP-PA-2000AR\wwwroot\Node_js_client\
+D:
+cd D:\DK-HP-PA-2000AR\wwwroot\Node_js_client\
+mkdir hello-next
+cd hello-next\
+del hello-next\
+rmdir hello-next\
+mkdir next_js_demo
+cd next_js_demo\
+cd ..
+rmdir next_js_demo\
+mkdir next_js_static_demo
+cd next_js_static_demo\
+npm init
+npm install --save react react-dom next
+code-insiders.cmd package.json 
+mkdir pages
+ls
+ls pages\
+npm run dev
+exit
+ssh root@139.59.65.128
+node -v
+node -v
+cd D:\DK-HP-PA-2000AR\wwwroot\Node_js_client\next_js_static_demo
+D:
+node init
+npm init
+exit
+exit
+ping 192.168.1.45
+aria2 --conf "c:\Programs\aria2_win.conf" 
+aria2c --conf "c:\Programs\aria2_win.conf" 
+ping 192.168.1.45
+ping 192.168.1.45
+cd "C:\Programs\
+wget https://github.com/Genymobile/scrcpy/releases/download/v1.6/scrcpy-win64-v1.6.zip
+which wget
+wget -v
+wget --V
+wget -V
+cd wget-1.19.1-win64\
+ls
+wget.exe https://github.com/Genymobile/scrcpy/releases/download/v1.6/scrcpy-win64-v1.6.zip
+exit
+ping 192.168.1.45
+adb_wi-fi.bat 
+adb devices
+scrcpy --help
+scrcpy -v
+scrcpy -b2M -m800
+exit
+scrcpy -b2M -m800
+which sdkmanager
+C:
+cd ..
+"C:\Programs\Android_SDK_Minimum_Windows\tools\bin\sdkmanager.bat" --list
+java --version
+exit
+java --version
+exit
+exit
+exit
+java --version
+java --help
+java
+java -showversion
+java -version
+C:
+cd ..
+"C:\Programs\Android_SDK_Minimum_Windows\tools\bin\sdkmanager.bat" --list
+"C:\Programs\Android_SDK_Minimum_Windows\tools\bin\sdkmanager.bat" --list
+"G:\Android_SDK_Minimum\tools\bin\sdkmanager.bat" --list
+"E:\Android_SDK_Minimum\tools\bin\sdkmanager.bat" --list
+exit
+"C:\Programs\Android_SDK_Minimum_Windows\tools\bin\sdkmanager.bat" --list
+exit
+C:
+cd ..
+"C:\Programs\Android_SDK_Minimum_Windows\tools\bin\sdkmanager.bat" --list
+adb_wi-fi.bat 
+adb devices
+exit
+"E:\Android_SDK_Minimum\tools\bin\sdkmanager.bat" --list
+exit
+exit
+adb devices
+adb devices
+scrcpy
+7z
+adb devices
+7z
+adb devices
+scrcpy
+exit
+7z
+cd "C:\Programs
+ls
+7z a Android_SDK_Minimum_Windows.zip Android_SDK_Minimum_Windows\ -mx0
+exit

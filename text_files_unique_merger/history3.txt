@@ -1,0 +1,3 @@
+cd "C:\Programs"
+cd scrcpy-win64\
+scrcpy

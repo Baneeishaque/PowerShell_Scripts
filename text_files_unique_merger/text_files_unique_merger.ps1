@@ -1,0 +1,1 @@
+Get-Content history?.txt | Sort-Object | Get-Unique > result.txt
