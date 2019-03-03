@@ -103,3 +103,108 @@ cd "C:\Programs
 ls
 7z a Android_SDK_Minimum_Windows.zip Android_SDK_Minimum_Windows\ -mx0
 exit
+7z
+7z a Android_SDK_Minimum_Windows.zip Android_SDK_Minimum_Windows\ -mx0
+cd "C:\Programs
+7z a gradle_repository.zip gradle_repository\ -mx0
+cd C:\Programs\Ruby25-x64\msys64\var
+7z a msys64_cache.zip cache\ -mx0
+cd C:\Users\srf\AppData\Roaming
+ls
+7z a npm-cache.zip npm-cache\ -mx0
+cd C:\Users\srf\AppData\Local
+7z a Google.zip Google\ -mx0
+exit
+7z a npm-cache.zip npm-cache\ -mx0
+cd C:\Users\srf\AppData\Local
+7z a Google.zip Google\ -mx0
+aria2c --conf "c:\Programs\aria2_win.conf" 
+xit
+exit
+aria2c --conf "c:\Programs\aria2_win.conf" 
+xit
+adb_wi-fi.bat 
+adb connect 192.168.43.3:5555
+scrcpy
+exit
+scrcpy
+exit
+scrcpy
+rmdir /s /q Android_SDK_Minimum_Windows
+exit
+cd ..
+rmdir
+help
+help rmdir
+rmidr /s /q gradle_repository2
+rmdir /s /q gradle_repository2
+lsw
+ls
+exit
+7z x H:\To_DK\Android_SDK_Minimum_Windows.zip -oC:\Programs2
+exit
+rmdir /s /q gradle_repository2
+lsw
+exit
+7z x H:\To_DK\Android_SDK_Minimum_Windows.zip -oC:\Programs2
+cd ..
+rmdir /s /q Android_SDK_Minimum_Windows2\
+cd aria2_repository\tasks\
+7z
+7z t JetBrains.Rider-2018.3.3.tar.gz JetBrains.dotCover.CommandLineTools.2018.3.3.zip JetBrains.dotMemoryConsole.2018.3.3.zip JetBrains.dotTrace.CommandLineTools.2018.3.3.zip PhpStorm-2018.3.4.dmg PhpStorm-2018.3.4.exe 
+7z t JetBrains.Rider-2018.3.3.tar.gz
+7z t "JetBrains.dotCover.CommandLineTools.2018.3.3.zip JetBrains.dotMemoryConsole.2018.3.3.zip JetBrains.dotTrace.CommandLineTools.2018.3.3.zip PhpStorm-2018.3.4.dmg PhpStorm-2018.3.4.exe"
+7z t -an JetBrains.dotCover.CommandLineTools.2018.3.3.zip JetBrains.dotMemoryConsole.2018.3.3.zip JetBrains.dotTrace.CommandLineTools.2018.3.3.zip PhpStorm-2018.3.4.dmg PhpStorm-2018.3.4.exe 
+7z t -air JetBrains.dotCover.CommandLineTools.2018.3.3.zip JetBrains.dotMemoryConsole.2018.3.3.zip JetBrains.dotTrace.CommandLineTools.2018.3.3.zip PhpStorm-2018.3.4.dmg PhpStorm-2018.3.4.exe 
+7z t -air! JetBrains.dotCover.CommandLineTools.2018.3.3.zip JetBrains.dotMemoryConsole.2018.3.3.zip JetBrains.dotTrace.CommandLineTools.2018.3.3.zip PhpStorm-2018.3.4.dmg PhpStorm-2018.3.4.exe 
+7z t -aiJetBrains.dotCover.CommandLineTools.2018.3.3.zip JetBrains.dotMemoryConsole.2018.3.3.zip JetBrains.dotTrace.CommandLineTools.2018.3.3.zip PhpStorm-2018.3.4.dmg PhpStorm-2018.3.4.exe 
+7z t -ai!JetBrains.dotCover.CommandLineTools.2018.3.3.zip JetBrains.dotMemoryConsole.2018.3.3.zip JetBrains.dotTrace.CommandLineTools.2018.3.3.zip PhpStorm-2018.3.4.dmg PhpStorm-2018.3.4.exe 
+7z t -airJetBrains.dotCover.CommandLineTools.2018.3.3.zip
+7z t -air!JetBrains.dotCover.CommandLineTools.2018.3.3.zip
+ls
+7z t -air JetBrains.Rider-2018.3.3.exe 
+7z t -airJetBrains.Rider-2018.3.3.exe 
+7z t -air!JetBrains.Rider-2018.3.3.exe 
+7z t -ai!"JetBrains.dotCover.CommandLineTools.2018.3.3.zip JetBrains.dotMemoryConsole.2018.3.3.zip JetBrains.dotTrace.CommandLineTools.2018.3.3.zip PhpStorm-2018.3.4.dmg PhpStorm-2018.3.4.exe"
+7z t -ai JetBrains.dotCover.CommandLineTools.2018.3.3.zip JetBrains.dotMemoryConsole.2018.3.3.zip JetBrains.dotTrace.CommandLineTools.2018.3.3.zip PhpStorm-2018.3.4.dmg PhpStorm-2018.3.4.exe 
+exit
+7z t -ai JetBrains.dotCover.CommandLineTools.2018.3.3.zip JetBrains.dotMemoryConsole.2018.3.3.zip JetBrains.dotTrace.CommandLineTools.2018.3.3.zip PhpStorm-2018.3.4.dmg PhpStorm-2018.3.4.exe 
+aria2c --conf "c:\Programs\aria2_win.conf" 
+exit
+aria2c --conf "c:\Programs\aria2_win.conf" 
+exit
+G:
+ls
+G:\Android_SDK\tools\bin\sdkmanager.bat --list
+exit
+Z:
+ls
+Z:\Programs\Android_SDK_Minimum_Windows\tools\bin\sdkmanager.bat --list
+exit
+where sdkmanager
+%ANDROID_HOME%
+echo %ANDROID_HOME%
+"C:\Programs\Android_SDK_Minimum_Windows\tools\bin\sdkmanager.bat" --list
+exit
+"C:\Programs\Android_SDK_Minimum_Windows\tools\bin\sdkmanager.bat" --list
+git -v
+git --version
+npm cache verify
+exit
+npm cache verify
+exit
+git --version
+exit
+G:
+ls
+rmdir
+help rmdir
+RMDIR /S /Q Android_SDK\
+exit
+aria2c --conf "c:\Programs\aria2_win.conf" 
+exit
+ssh
+ssh root@139.59.65.128
+exit
+ssh root@139.59.65.128
+exit
