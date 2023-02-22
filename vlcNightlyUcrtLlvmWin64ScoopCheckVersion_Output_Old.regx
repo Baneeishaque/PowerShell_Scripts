@@ -1,0 +1,3 @@
+String : version:20230222
+url:20230222-0429/vlc-4.0.0-dev-win64-013a1e4a.7z
+Expression : version:(\d\d\d\d\d\d\d\d)\surl:(\d\d\d\d\d\d\d\d-\d+)(.+)
