@@ -22,4 +22,4 @@ Write-Output 'Flutter master branch update'
 Set-Location "$(scoop prefix fvm)\versions\master"
 git pull
 Set-Location C:\Lab_Data\Account_Ledger_Windows_Flutter
-fvm flutter build --debug windows
+fvm flutter build windows --debug
