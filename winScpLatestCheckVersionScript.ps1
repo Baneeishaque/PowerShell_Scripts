@@ -7,19 +7,45 @@ $latestRc = Select-String -InputObject $(Invoke-WebRequest -Uri "https://winscp.
 $latestBeta = Select-String -InputObject $(Invoke-WebRequest -Uri "https://winscp.net/eng/downloads.php").Content -Pattern 'WinSCP-([\d.]+)\.beta-Portable\.zip'
 # $latestBeta.Matches.Groups
 
-if ($latestRc.Matches.Groups.Count -eq 0) {
-    if ([System.Version]$latestStable.Matches.Groups[1].Value -gt [System.Version]$latestBeta.Matches.Groups[1].Value) {
+if ($latestBeta.Matches.Groups.Count -eq 0) {
+    if ($latestRc.Matches.Groups.Count -eq 0) {
         $latestRelease = $latestStable.Matches.Groups[1].Value
     }
     else {
-        $latestRelease = "$($latestBeta.Matches.Groups[1].Value) %20beta"
+        if ([System.Version]$latestStable.Matches.Groups[1].Value -gt [System.Version]$latestRc.Matches.Groups[1].Value) {
+            $latestRelease = $latestStable.Matches.Groups[1].Value
+        }
+        else {
+            $latestRelease = "$($latestRc.Matches.Groups[1].Value) %20RC .RC"
+        }
     }
-}else {
-    if ([System.Version]$latestStable.Matches.Groups[1].Value -gt [System.Version]$latestRc.Matches.Groups[1].Value) {
-        $latestRelease = $latestStable.Matches.Groups[1].Value
+}
+else {
+    if ($latestRc.Matches.Groups.Count -eq 0) {
+        if ([System.Version]$latestStable.Matches.Groups[1].Value -gt [System.Version]$latestBeta.Matches.Groups[1].Value) {
+            $latestRelease = $latestStable.Matches.Groups[1].Value
+        }
+        else {
+            $latestRelease = "$($latestBeta.Matches.Groups[1].Value) %20beta .beta"
+        }
     }
     else {
-        $latestRelease = "$($latestRc.Matches.Groups[1].Value) %20RC"
+        if ([System.Version]$latestRc.Matches.Groups[1].Value -gt [System.Version]$latestBeta.Matches.Groups[1].Value) {
+            if ([System.Version]$latestStable.Matches.Groups[1].Value -gt [System.Version]$latestRc.Matches.Groups[1].Value) {
+                $latestRelease = $latestStable.Matches.Groups[1].Value
+            }
+            else {
+                $latestRelease = "$($latestRc.Matches.Groups[1].Value) %20RC .RC"
+            }
+        }
+        else {
+            if ([System.Version]$latestStable.Matches.Groups[1].Value -gt [System.Version]$latestBeta.Matches.Groups[1].Value) {
+                $latestRelease = $latestStable.Matches.Groups[1].Value
+            }
+            else {
+                $latestRelease = "$($latestBeta.Matches.Groups[1].Value) %20beta .beta"
+            }
+        }
     }
 }
 
