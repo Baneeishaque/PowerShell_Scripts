@@ -21,5 +21,5 @@ Write-Output 'After Chocolatey Update, Clean Chocolatey Cache'
 Write-Output 'Flutter master branch update'
 Set-Location "$(scoop prefix fvm)\versions\master"
 git pull
-Set-Location C:\Lab_Data\Account_Ledger_Windows_Flutter
+Set-Location C:\Lab\Account_Ledger_Windows_Flutter
 fvm flutter build windows --debug
