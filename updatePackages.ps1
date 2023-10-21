@@ -24,5 +24,6 @@ git pull
 jabba use openjdk@11.0.16
 Set-Location C:\Lab_Data\Account_Ledger_Windows_Flutter\account_ledger_lib_kotlin_native
 .\compileMainCFile.ps1
+fvm spawn master clean
 fvm spawn master build windows --debug
 fvm spawn master build windows
