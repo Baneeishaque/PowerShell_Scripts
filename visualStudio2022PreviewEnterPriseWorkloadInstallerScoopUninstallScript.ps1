@@ -1,0 +1,4 @@
+# User $dir instead of $(scoop prefix visual-studio-2022-preview-enterprise-nativedesktop-recommended-installer)
+Start-Process -FilePath "$(scoop prefix visual-studio-2022-preview-enterprise-nativedesktop-recommended-installer)\vs_enterprise.exe" -ArgumentList "--remove=Microsoft.VisualStudio.Workload.nativedesktop;includeRecommended", "--channelId=VisualStudio.17.Preview", "--productId=Microsoft.VisualStudio.Product.Enterprise", "--passive", "--norestart", "--wait" -Wait
+Start-Process -FilePath "$(scoop prefix visual-studio-2022-preview-enterprise-nativedesktop-recommended-installer)\vs_enterprise.exe" -ArgumentList "uninstall", "--channelId=VisualStudio.17.Preview", "--productId=Microsoft.VisualStudio.Product.Enterprise", "--passive", "--norestart", "--wait" -Wait
+Start-Process -FilePath "${Env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe" -ArgumentList "/uninstall" -Wait
