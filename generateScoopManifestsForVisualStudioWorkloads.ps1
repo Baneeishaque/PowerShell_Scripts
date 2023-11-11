@@ -12,10 +12,11 @@ $(Select-String -InputObject $(Invoke-WebRequest -Uri "https://raw.githubusercon
 
     $destinationPrefix = "Scoop Manifests\visual-studio-2022-preview-enterprise-$($_.Groups[2].Value.ToLower())-"
     $destinationSuffix = "installer.json"
-
     $destination = "$destinationPrefix$destinationSuffix"
+
     New-Item -ItemType File -Path $destination -Force
     Copy-Item "visual-studio-2022-preview-enterprise-workload-installer.json.template" -Destination $destination
+
     ((Get-Content -path $destination -Raw) -replace '{latestVersion}', $latestVersion) | Set-Content -Path $destination
     ((Get-Content -path $destination -Raw) -replace '{fileHash}', $fileHash) | Set-Content -Path $destination
 
