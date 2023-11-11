@@ -1,5 +1,5 @@
 {
-    "version": "17.6.6",
+    "version": "{latestVersion}",
     "description": "Visual Studio Enterprise is a powerful, comprehensive IDE for developers designing, building, testing, and deploying complex applications for any platform—including the Microsoft stack. Preview Channel is meant for those who are eager to try out the very latest Visual Studio features and fixes. Workload Formal Name : {workloadFormalName}, Workload Description : {workloadDescription}",
     "homepage": "https://visualstudio.microsoft.com/vs/preview/",
     "license": "Freemium",
@@ -18,8 +18,12 @@
     "uninstaller": {
         "script": [
             "Start-Process -FilePath \"$dir\\vs_enterprise.exe\" -ArgumentList \"--remove=Microsoft.VisualStudio.Workload.{workloadInternalName};includeRecommended\", \"--channelId=VisualStudio.17.Preview\", \"--productId=Microsoft.VisualStudio.Product.Enterprise\", \"--passive\", \"--norestart\", \"--wait\" -Wait",
+            "if ($cmd -ceq 'uninstall') {",
+            "if ((($(scoop list) -cmatch 'visual-studio-2022-preview-enterprise(-.*)?-installer' | ForEach-Object -Process {$_.SubString(0, $_.IndexOf(' '))}) -cne $app).length -eq 0) {",
             "Start-Process -FilePath \"$dir\\vs_enterprise.exe\" -ArgumentList \"uninstall\", \"--channelId=VisualStudio.17.Preview\", \"--productId=Microsoft.VisualStudio.Product.Enterprise\", \"--passive\", \"--norestart\", \"--wait\" -Wait",
-            "Start-Process -FilePath \"${Env:ProgramFiles(x86)}\\Microsoft Visual Studio\\Installer\\vs_installer.exe\" -ArgumentList \"/uninstall\" -Wait"
+            "Start-Process -FilePath \"${Env:ProgramFiles(x86)}\\Microsoft Visual Studio\\Installer\\vs_installer.exe\" -ArgumentList \"/uninstall\" -Wait",
+            "}",
+            "}"
         ]
     },
     "checkver": {
