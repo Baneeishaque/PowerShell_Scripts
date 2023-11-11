@@ -22,6 +22,7 @@
             "if ((($(scoop list) -cmatch 'visual-studio-2022-preview-enterprise(-.*)?-installer' | ForEach-Object -Process {$_.SubString(0, $_.IndexOf(' '))}) -cne $app).length -eq 0) {",
             "Start-Process -FilePath \"$dir\\vs_enterprise.exe\" -ArgumentList \"uninstall\", \"--channelId=VisualStudio.17.Preview\", \"--productId=Microsoft.VisualStudio.Product.Enterprise\", \"--passive\", \"--norestart\", \"--wait\" -Wait",
             "Start-Process -FilePath \"${Env:ProgramFiles(x86)}\\Microsoft Visual Studio\\Installer\\vs_installer.exe\" -ArgumentList \"/uninstall\" -Wait",
+            "Remove-Item \"$([System.Environment]::GetFolderPath('commonstartmenu'))\\Programs\\Visual Studio Installer.lnk\"",
             "}",
             "}"
         ]
