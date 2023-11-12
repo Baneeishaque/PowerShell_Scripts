@@ -17,7 +17,7 @@
     },
     "uninstaller": {
         "script": [
-            "Start-Process -FilePath \"$dir\\vs_enterprise.exe\" -ArgumentList \"--remove=Microsoft.VisualStudio.Workload.{workloadInternalName};includeRecommended\", \"--channelId=VisualStudio.17.Preview\", \"--productId=Microsoft.VisualStudio.Product.Enterprise\", \"--passive\", \"--norestart\", \"--wait\" -Wait",
+            "Start-Process -FilePath \"$dir\\vs_enterprise.exe\" -ArgumentList \"--remove=Microsoft.VisualStudio.Workload.{workloadInternalName}\", \"--channelId=VisualStudio.17.Preview\", \"--productId=Microsoft.VisualStudio.Product.Enterprise\", \"--passive\", \"--norestart\", \"--wait\" -Wait",
             "if ($cmd -ceq 'uninstall') {",
             "if ((($(scoop list) -cmatch 'visual-studio-2022-preview-enterprise(-.*)?-installer' | ForEach-Object -Process {$_.SubString(0, $_.IndexOf(' '))}) -cne $app).length -eq 0) {",
             "Start-Process -FilePath \"$dir\\vs_enterprise.exe\" -ArgumentList \"uninstall\", \"--channelId=VisualStudio.17.Preview\", \"--productId=Microsoft.VisualStudio.Product.Enterprise\", \"--passive\", \"--norestart\", \"--wait\" -Wait",
