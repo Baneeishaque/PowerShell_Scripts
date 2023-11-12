@@ -1,28 +1,22 @@
-# # $latest = Select-String -InputObject $(Invoke-WebRequest -Uri "https://github.com/git-for-windows/git/releases/").Content -Pattern 'tag/v(?<version>[\d.]+)(?<candidate>(-rc\d\d?)?).windows.(?<patch>\d\d?).+Git f' -AllMatches | ForEach-Object { $_.Matches }
-# $latest = Select-String -InputObject $(Invoke-WebRequest -Uri "https://github.com/git-for-windows/git/releases?page=2").Content -Pattern 'tag/v(?<version>[\d.]+)(?<candidate>(-rc\d\d?)?).windows.(?<patch>\d\d?).+Git f' -AllMatches | ForEach-Object { $_.Matches }
-# # $latest
-# $latest | ForEach-Object {
+$latest = Select-String -InputObject $(Invoke-WebRequest -Uri 'https://github.com/git-for-windows/git/releases/').Content -Pattern 'tag/v(?<version>[\d.]+)(?<candidate>(-rc\d\d?)?).windows.(?<patch>\d\d?).+Git f' -AllMatches | ForEach-Object -Process { $_.Matches }
+# $latest = Select-String -InputObject $(Invoke-WebRequest -Uri 'https://github.com/git-for-windows/git/releases/').Content -Pattern 'tag/v(?<version>[\d.]+)(?<candidate>(-rc\d\d?)?).windows.(?<patch>\d\d?).+Git f' | ForEach-Object -Process { $_.Matches }
 
-#     # if ($_.Groups[4].Value -gt 1){
+foreach ($lat in $latest) {
 
-#     #     Write-Output "$($_.Groups[2].Value).$($_.Groups[4].Value)$($_.Groups[3].Value)"
+    $versionText = "$($lat.Groups[2].Value).$($lat.Groups[4].Value)$($lat.Groups[3].Value)"
+    $matchResult = Select-String -InputObject $versionText -Pattern '(?<version>[\d.]+(?<candidate>-rc\d\d?)?)'
+    $fileVersionSuffix = $matchResult.Matches.Groups[2].Value -eq '' ? ($lat.Groups[4].Value -eq 1 ? '': ".$($lat.Groups[4].Value)") : $matchResult.Matches.Groups[2].Value
+    $versionTextWithSuffix = "$($lat.Groups[2].Value).$($lat.Groups[4].Value)$($lat.Groups[3].Value)-suffix$fileVersionSuffix"
+    $matchResultWithSuffix = Select-String -InputObject $versionTextWithSuffix -Pattern '(?<version>[\d.]+(?<candidate>-rc\d\d?)?)-suffix(?<suffix>.+)?'
+    # $matchResultWithSuffix.Matches.Groups
 
-#     # }else{
+    [System.Version]$version = "$($lat.Groups[2].Value).$($lat.Groups[4].Value)"
+    $version
 
-#     #     Write-Output "$($_.Groups[2].Value)$($_.Groups[3].Value)"
-#     # }
-#     Write-Output "$($_.Groups[2].Value).$($_.Groups[4].Value)$($_.Groups[3].Value)"
-# }
+    wget --spider "https://github.com/git-for-windows/git/releases/download/v$($version.Major).$($version.Minor).$($version.Build)$($matchResult.Matches.Groups[2].Value).windows.$($version.Revision)/PortableGit-$($version.Major).$($version.Minor).$($version.Build)$($matchResultWithSuffix.Matches.Groups[3].Value)-32-bit.7z.exe"
 
-$latest = Select-String -InputObject $(Invoke-WebRequest -Uri 'https://github.com/git-for-windows/git/releases/').Content -Pattern 'tag/v(?<version>[\d.]+)(?<candidate>(-rc\d\d?)?).windows.(?<patch>\d\d?).+Git f'
-# $latest.Matches.Groups
-# if ($latest.Matches.Groups[4].Value -gt 1) {
+    $hash = Select-String -InputObject $(Invoke-WebRequest -Uri "https://github.com/git-for-windows/git/releases/tag/v$($version.Major).$($version.Minor).$($version.Build)$($matchResult.Matches.Groups[2].Value).windows.$($version.Revision)").Content -Pattern "<td>PortableGit-$($version.Major).$($version.Minor).$($version.Build)$($matchResultWithSuffix.Matches.Groups[3].Value)-32-bit.7z.exe</td>\s*<td>(?<hash>.+)</td>"
+    $hash.Matches.Groups[1].Value
 
-#     Write-Output "$($latest.Matches.Groups[2].Value).$($latest.Matches.Groups[4].Value)$($latest.Matches.Groups[3].Value)"
-
-# }
-# else {
-
-#     Write-Output "$($latest.Matches.Groups[2].Value)$($latest.Matches.Groups[3].Value)"
-# }
-Write-Output "$($latest.Matches.Groups[2].Value).$($latest.Matches.Groups[4].Value)$($latest.Matches.Groups[3].Value)"
+    Write-Output '-----------------------------'
+}
