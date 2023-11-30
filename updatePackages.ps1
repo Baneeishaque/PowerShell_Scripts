@@ -21,7 +21,7 @@ Write-Output 'After Chocolatey Update, Clean Chocolatey Cache'
 Write-Output 'Flutter master branch update'
 Set-Location "$(scoop prefix fvm)\versions\master"
 git pull
-jabba use openjdk@20.0.1
+jabba use openjdk@21.0.1
 Set-Location C:\Lab_Data\Account_Ledger_Windows_Flutter\account_ledger_lib_kotlin_native
 .\compileMainCFile.ps1
 fvm spawn master clean
