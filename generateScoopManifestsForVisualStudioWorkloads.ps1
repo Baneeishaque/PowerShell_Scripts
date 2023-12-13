@@ -2,7 +2,7 @@ $latestVersion = Select-String -InputObject $(Invoke-WebRequest -Uri 'https://le
 
 $fileHash = (Get-FileHash -InputStream (([System.Net.WebClient]::new()).OpenRead('https://aka.ms/vs/17/pre/vs_enterprise.exe')) -Algorithm SHA256).Hash.ToLower()
 
-$(Select-String -InputObject $(Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MicrosoftDocs/visualstudio-docs/main/docs/install/includes/vs-2022/workload-component-id-vs-enterprise.md").Content -Pattern "## (.+)\s\s\*\*ID:\*\* Microsoft\.VisualStudio\.Workload\.(.+)\s\s\*\*Description:\*\* (.+)" -AllMatches | ForEach-Object { $_.Matches }) | Where-Object { $_.Groups[2].Value -notmatch "CoreEditor" } | ForEach-Object {
+$(Select-String -InputObject $(Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MicrosoftDocs/visualstudio-docs/main/docs/install/includes/vs-2022/workload-component-id-vs-enterprise.md").Content -Pattern "## (.+)\s\s\*\*ID:\*\* Microsoft\.VisualStudio\.Workload\.(.+)\s\s\*\*Description:\*\* (.+)" -AllMatches | ForEach-Object { $_.Matches }) | ForEach-Object {
 
     # Write-Output $_.Groups[1].Value $_.Groups[2].Value $_.Groups[3].Value
 
@@ -27,3 +27,5 @@ $(Select-String -InputObject $(Invoke-WebRequest -Uri "https://raw.githubusercon
     ((Get-Content -path $destination -Raw) -replace '{workloadInternalName}', "$($_.Groups[2].Value.ToLower());includeRecommended;includeOptional") | Set-Content -Path "$($destinationPrefix)full-$($destinationSuffix)"
     ((Get-Content -path $destination -Raw) -replace '{workloadInternalName}', $_.Groups[2].Value.ToLower()) | Set-Content -Path $destination
 }
+
+& "$(scoop prefix scoop)\bin\checkver.ps1" -Dir "Scoop Manifests" -Update -Force
