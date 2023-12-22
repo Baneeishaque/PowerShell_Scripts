@@ -5,7 +5,6 @@ $regex2 = 'download/([\w/-]+)(officedeploymenttool_[\d-]+\.exe)'
 
 $cont = $(Invoke-WebRequest $url1).Content
 if (!($cont -match $regex1)) { Write-Host "Could not match '$regex1' in '$url1'"; return }
-$app_ver = $matches[1]
 $cont = $(Invoke-WebRequest $url2).Content
 if (!($cont -match $regex2)) { Write-Host "Could not match '$regex2' in '$url2'"; return }
 $path = $matches[1]; $filename = $matches[2]
