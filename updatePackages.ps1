@@ -1,3 +1,11 @@
+Write-Output 'Scoop Unused Buckets'
+Write-Output '------------------------------'
+sfsu unused-buckets
+
+Write-Output 'Sqlyog Backup Jobs'
+Write-Output '------------------------------'
+Start-Process -FilePath 'C:\Program Files\SQLyog Trial\SJA.exe' -ArgumentList '"C:\Lab_Data\Account-Ledger-Server\db_backup_jobs\nomadller_hostinger_temp_Avita-Windows.xml" -l"C:\Users\dk\AppData\Roaming\SQLyog\sja.log" -s"C:\Users\dk\AppData\Roaming\SQLyog\sjasession.xml"' -Wait
+
 Write-Output 'Winget Outdated Apps'
 Write-Output '------------------------------'
 winget upgrade --include-unknown --include-pinned --verbose-logs --disable-interactivity
