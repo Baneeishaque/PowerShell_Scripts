@@ -32,10 +32,11 @@ Set-Location "$(scoop prefix fvm)\versions\master"
 git pull
 
 Write-Output 'Buildign flutter sample apps'
+Write-Output '------------------------------'
 $tempLocation = 'C:\Flutter-Temp-Lab'
 $tempAppName = 'my_app'
 $tempModuleName = 'my_module'
-jabba use openjdk@21.0.1
+fvm spawn master config --jdk-dir=$(jabba which openjdk@19.0.2)
 New-Item -Path $tempLocation -ItemType Directory
 Set-Location $tempLocation
 fvm spawn master create $tempAppName
