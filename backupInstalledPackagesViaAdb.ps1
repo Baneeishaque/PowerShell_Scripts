@@ -3,6 +3,7 @@ function Get-EmulatorInstanceName {
 
     $deviceToInstanceMap = @{
         'G011A' = 'Android 7 DIGI KGB Hajara Banee Gmail 1-2-3 MEmu'
+        'A5010' = 'Android 7 DIGI KGB Ismail MEmu'
     }
 
     $instanceName = $deviceToInstanceMap[$deviceInfo]
