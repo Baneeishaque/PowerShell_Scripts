@@ -2,8 +2,9 @@ function Get-EmulatorInstanceName {
     param([string]$deviceInfo)
 
     $deviceToInstanceMap = @{
-        'G011A' = 'Android 7 DIGI KGB Hajara Banee Gmail 1-2-3 MEmu'
-        'A5010' = 'Android 7 DIGI KGB Ismail MEmu'
+        'G011A'  = 'Android 7 DIGI KGB Hajara Banee Gmail 1-2-3 MEmu'
+        'A5010'  = 'Android 7 DIGI KGB Ismail MEmu'
+        'b0qxxx' = 'Android 11 BlueStacks App Player'
     }
 
     $instanceName = $deviceToInstanceMap[$deviceInfo]
@@ -45,6 +46,9 @@ $outputFileNameFolder1 = Join-Path $outputFolder1 "${emulatorInstanceName} Packa
 $outputFileNameFolder2 = Join-Path $outputFolder2 "${emulatorInstanceName} Packages.csv"
 
 $csvRows | Out-File -FilePath $outputFileNameFolder1 -Encoding UTF8
-$csvRows | Out-File -FilePath $outputFileNameFolder2 -Encoding UTF8
+if ($deviceInfo -cne 'b0qxxx') {
+
+    $csvRows | Out-File -FilePath $outputFileNameFolder2 -Encoding UTF8
+}
 
 Write-Host "CSV files created in folders: '$outputFileNameFolder1', '$outputFileNameFolder2'"
