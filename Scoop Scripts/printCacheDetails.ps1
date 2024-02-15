@@ -22,11 +22,14 @@ foreach ($object in $cacheShowOutput) {
         $bucket = $listHashTable[$name]
         Write-Output ("Name: {0}, Version: {1}, Bucket: {2}" -f $name, $version, $bucket)
     } else {
-        # If it doesn't exist, get the scoop info output for the app
-        $infoOutput = & "$(scoop prefix scoop)\bin\scoop.ps1" info $name
+        # If it doesn't exist, get the scoop search output for the app
+        $searchOutput = & "$(scoop prefix scoop)\bin\scoop.ps1" search $name
 
-        # Extract the Bucket from the info output
-        $bucket = $infoOutput.Bucket
+        # Sort the search output by version and select the object with the latest version
+        $latestObject = $searchOutput | Sort-Object Version -Descending | Select-Object -First 1
+
+        # Extract the Bucket from the latest object
+        $bucket = $latestObject.Source
 
         # Print the Name, Version, and Bucket
         Write-Output ("Name: {0}, Version: {1}, Bucket: {2}" -f $name, $version, $bucket)
