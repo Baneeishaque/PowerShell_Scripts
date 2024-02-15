@@ -38,8 +38,14 @@ foreach ($entry in $sortedHashTable) {
         continue
     }
 
+    # Convert the Version attribute of each object in filteredSearchOutput to System.Version
+    $filteredSearchOutput = $filteredSearchOutput | ForEach-Object {
+        $_.Version = New-Object System.Version $_.Version
+        $_
+    }
+
     # Sort the filtered search output by version (as Version objects) and select the object with the latest version
-    $latestObject = $filteredSearchOutput | Sort-Object {[Version] $_.Version} -Descending | Select-Object -First 1
+    $latestObject = $filteredSearchOutput | Sort-Object Version -Descending | Select-Object -First 1
 
     # Extract the Bucket and the latest Version from the latest object
     $bucket = $latestObject.Source
@@ -49,7 +55,7 @@ foreach ($entry in $sortedHashTable) {
     $version = $entry.Value.Version
 
     # If the latest version is not in the cache, print a message that the cache file for the app would be removed
-    if ([Version] $version -lt [Version] $latestVersion) {
+    if ([System.Version] $version -lt $latestVersion) {
         if ($dryRun) {
             Write-Output ("Would remove cache for app {0} as the latest version {1} was not in the cache." -f $entry.Key, $latestVersion)
         } else {
