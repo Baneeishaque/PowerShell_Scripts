@@ -24,8 +24,14 @@ foreach ($entry in $sortedHashTable) {
     # Filter the search output for objects where the name is exactly the same as the app name
     $filteredSearchOutput = $searchOutput | Where-Object { $_.Name -eq $entry.Key }
 
-    # Sort the filtered search output by version and select the object with the latest version
-    $latestObject = $filteredSearchOutput | Sort-Object Version -Descending | Select-Object -First 1
+    # If no matching app is found in the search output, remove the cache file for the app
+    if ($filteredSearchOutput.Count -eq 0) {
+        & "$(scoop prefix scoop)\bin\scoop.ps1" cache rm $entry.Key
+        continue
+    }
+
+    # Sort the filtered search output by version (as Version objects) and select the object with the latest version
+    $latestObject = $filteredSearchOutput | Sort-Object {[Version] $_.Version} -Descending | Select-Object -First 1
 
     # Extract the Bucket and the latest Version from the latest object
     $bucket = $latestObject.Source
