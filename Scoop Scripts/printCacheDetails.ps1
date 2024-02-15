@@ -1,37 +1,33 @@
-# Run the scoop cache show command and store the output in a variable
-$cacheShowOutput = & "$(scoop prefix scoop)\bin\scoop.ps1" cache show
+# Run the scoop show command and store the output in a variable
+$showOutput = & "$(scoop prefix scoop)\bin\scoop.ps1" cache show
 
-# Run the scoop list command and store the output in a variable
-$listOutput = & "$(scoop prefix scoop)\bin\scoop.ps1" list
+# Create a hashtable to store the name and version from the show output
+$showHashTable = @{}
+foreach ($object in $showOutput) {
+    # If the name already exists in the hashtable, continue to the next iteration
+    if ($showHashTable.ContainsKey($object.Name)) {
+        continue
+    }
 
-# Create a hashtable to store the name and bucket from the list output
-$listHashTable = @{}
-foreach ($object in $listOutput) {
-    $listHashTable[$object.Name] = $object.Source
+    # Otherwise, add the object to the hashtable
+    $showHashTable[$object.Name] = $object
 }
 
-# Iterate over each object in the cache show output
-foreach ($object in $cacheShowOutput) {
-    # Extract the Name and Version
-    $name = $object.Name
-    $version = $object.Version
+# Iterate over each object in the show hashtable
+foreach ($name in $showHashTable.Keys) {
+    # Get the scoop search output for the app
+    $searchOutput = & "$(scoop prefix scoop)\bin\scoop.ps1" search $name
 
-    # Check if the name exists in the list hashtable
-    if ($listHashTable.ContainsKey($name)) {
-        # If it exists, print the Name, Version, and Bucket
-        $bucket = $listHashTable[$name]
-        Write-Output ("Name: {0}, Version: {1}, Bucket: {2}" -f $name, $version, $bucket)
-    } else {
-        # If it doesn't exist, get the scoop search output for the app
-        $searchOutput = & "$(scoop prefix scoop)\bin\scoop.ps1" search $name
+    # Sort the search output by version and select the object with the latest version
+    $latestObject = $searchOutput | Sort-Object Version -Descending | Select-Object -First 1
 
-        # Sort the search output by version and select the object with the latest version
-        $latestObject = $searchOutput | Sort-Object Version -Descending | Select-Object -First 1
+    # Extract the Bucket and the latest Version from the latest object
+    $bucket = $latestObject.Source
+    $latestVersion = $latestObject.Version
 
-        # Extract the Bucket from the latest object
-        $bucket = $latestObject.Source
+    # Get the Version from the show hashtable
+    $version = $showHashTable[$name].Version
 
-        # Print the Name, Version, and Bucket
-        Write-Output ("Name: {0}, Version: {1}, Bucket: {2}" -f $name, $version, $bucket)
-    }
+    # Print the Name, Version from the show output, latest Version, and Bucket
+    Write-Output ("Name: {0}, Version: {1}, Latest Version: {2}, Bucket: {3}" -f $name, $version, $latestVersion, $bucket)
 }
