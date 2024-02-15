@@ -24,7 +24,11 @@ Write-Output 'Update Windows Store Apps'
 Write-Output '------------------------------'
 Get-CimInstance -Namespace "Root\cimv2\mdm\dmmap" -ClassName "MDM_EnterpriseModernAppManagement_AppManagement01" | Invoke-CimMethod -MethodName UpdateScanMethod
 
-Write-Output 'After Scoop Update, Clean Scoop Apps & Cache'
+Write-Output 'After Scoop Update, Clean Scoop Apps'
+
+. '.\Scoop Scripts\Optimize-ScoopCache.ps1'
+Optimize-ScoopCache -dryRun $false
+
 Write-Output 'After Chocolatey Update, Clean Chocolatey Cache'
 
 Write-Output 'Flutter master branch update'
