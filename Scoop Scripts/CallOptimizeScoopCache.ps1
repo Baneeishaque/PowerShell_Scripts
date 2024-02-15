@@ -2,4 +2,5 @@
 . .\Optimize-ScoopCache.ps1
 
 # Call the function with dryRun set to true
-Optimize-ScoopCache -dryRun $true
+# Optimize-ScoopCache -dryRun $true
+Optimize-ScoopCache
