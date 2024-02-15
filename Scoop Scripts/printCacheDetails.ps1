@@ -1,22 +1,25 @@
-# Run the scoop show command and store the output in a variable
-$showOutput = & "$(scoop prefix scoop)\bin\scoop.ps1" cache show
+# Run the scoop cache show command and store the output in a variable
+$cacheShowOutput = & "$(scoop prefix scoop)\bin\scoop.ps1" cache show
 
-# Create a hashtable to store the name and version from the show output
-$showHashTable = @{}
-foreach ($object in $showOutput) {
+# Create a hashtable to store the name and version from the cache show output
+$cacheShowHashTable = @{}
+foreach ($object in $cacheShowOutput) {
     # If the name already exists in the hashtable, continue to the next iteration
-    if ($showHashTable.ContainsKey($object.Name)) {
+    if ($cacheShowHashTable.ContainsKey($object.Name)) {
         continue
     }
 
     # Otherwise, add the object to the hashtable
-    $showHashTable[$object.Name] = $object
+    $cacheShowHashTable[$object.Name] = $object
 }
 
-# Iterate over each object in the show hashtable
-foreach ($name in $showHashTable.Keys) {
+# Sort the hashtable by key (app name)
+$sortedHashTable = $cacheShowHashTable.GetEnumerator() | Sort-Object Key
+
+# Iterate over each object in the sorted hashtable
+foreach ($entry in $sortedHashTable) {
     # Get the scoop search output for the app
-    $searchOutput = & "$(scoop prefix scoop)\bin\scoop.ps1" search $name
+    $searchOutput = & "$(scoop prefix scoop)\bin\scoop.ps1" search $entry.Key
 
     # Sort the search output by version and select the object with the latest version
     $latestObject = $searchOutput | Sort-Object Version -Descending | Select-Object -First 1
@@ -25,9 +28,9 @@ foreach ($name in $showHashTable.Keys) {
     $bucket = $latestObject.Source
     $latestVersion = $latestObject.Version
 
-    # Get the Version from the show hashtable
-    $version = $showHashTable[$name].Version
+    # Get the Version from the cache show hashtable
+    $version = $entry.Value.Version
 
-    # Print the Name, Version from the show output, latest Version, and Bucket
-    Write-Output ("Name: {0}, Version: {1}, Latest Version: {2}, Bucket: {3}" -f $name, $version, $latestVersion, $bucket)
+    # Print the Name, Version from the cache show output, latest Version, and Bucket
+    Write-Output ("Name: {0}, Version: {1}, Latest Version: {2}, Bucket: {3}" -f $entry.Key, $version, $latestVersion, $bucket)
 }
