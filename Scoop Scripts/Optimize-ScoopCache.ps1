@@ -50,7 +50,6 @@ function Optimize-ScoopCache {
         $latestObject = $filteredSearchOutput | Sort-Object Version -Descending | Select-Object -First 1
 
         # Extract the Bucket and the latest Version from the latest object
-        $bucket = $latestObject.Source
         $latestVersion = $latestObject.Version
 
         # Get the Version from the cache show hashtable
@@ -64,6 +63,8 @@ function Optimize-ScoopCache {
                 & "$(scoop prefix scoop)\bin\scoop.ps1" cache rm $entry.Key
                 Write-Output ("Removed cache for app {0} as the latest version {1} was not in the cache." -f $entry.Key, $latestVersion)
             }
+        }else {
+            Write-Output ("Cache for app {0} is up-to-date with the latest version {1}." -f $entry.Key, $latestVersion)
         }
     }
 }
