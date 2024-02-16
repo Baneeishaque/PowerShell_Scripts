@@ -6,6 +6,10 @@ $scoopDirs = Get-ChildItem -Path $dir -Directory | Where-Object { $_.Name -like 
 
 # For each 'Scoop' directory
 foreach ($scoopDir in $scoopDirs) {
+
+    Write-Output "`n$($scoopDir.FullName)"
+    Write-Output '------------------------'
+
     # Get the 'bucket' directory
     $bucketDir = Join-Path -Path $scoopDir.FullName -ChildPath "bucket"
 
@@ -24,8 +28,8 @@ foreach ($scoopDir in $scoopDirs) {
 
             # If the 'homepage' field exists
             if ($jsonObject.PSObject.Properties.Name -contains "homepage") {
-                # Print the 'homepage' field
-                Write-Output $jsonObject.homepage
+
+                Write-Output "$(Split-Path $jsonFile.FullName -Leaf | % { [IO.Path]::GetFileNameWithoutExtension($_) }) $($jsonObject.homepage) $($jsonObject.version)"
             }
         }
     }
