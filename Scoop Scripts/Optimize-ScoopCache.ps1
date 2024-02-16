@@ -32,10 +32,11 @@ function Optimize-ScoopCache {
         # If no matching app is found in the search output, print a message that the cache file for the app would be removed
         if ($filteredSearchOutput.Count -eq 0) {
             if ($dryRun) {
-                Write-Output ("Would remove cache for app {0} as no matching app was found in the search output." -f $entry.Key)
-            } else {
+                Write-Output ('Would remove cache for app {0} as no matching app was found in the search output.' -f $entry.Key)
+            }
+            else {
                 & "$(scoop prefix scoop)\bin\scoop.ps1" cache rm $entry.Key
-                Write-Output ("Removed cache for app {0} as no matching app was found in the search output." -f $entry.Key)
+                Write-Output ('Removed cache for app {0} as no matching app was found in the search output.' -f $entry.Key)
             }
             continue
         }
@@ -58,13 +59,15 @@ function Optimize-ScoopCache {
         # If the latest version is not in the cache, print a message that the cache file for the app would be removed
         if ([System.Version] $version -lt $latestVersion) {
             if ($dryRun) {
-                Write-Output ("Would remove cache for app {0} as the latest version {1} was not in the cache." -f $entry.Key, $latestVersion)
-            } else {
-                & "$(scoop prefix scoop)\bin\scoop.ps1" cache rm $entry.Key
-                Write-Output ("Removed cache for app {0} as the latest version {1} was not in the cache." -f $entry.Key, $latestVersion)
+                Write-Output ('Would remove cache for app {0} as the latest version {1} was not in the cache.' -f $entry.Key, $latestVersion)
             }
-        }else {
-            Write-Output ("Cache for app {0} is up-to-date with the latest version {1}." -f $entry.Key, $latestVersion)
+            else {
+                & "$(scoop prefix scoop)\bin\scoop.ps1" cache rm $entry.Key
+                Write-Output ('Removed cache for app {0} as the latest version {1} was not in the cache.' -f $entry.Key, $latestVersion)
+            }
+        }
+        else {
+            Write-Output ('Cache for app {0} is up-to-date with the latest version {1}.' -f $entry.Key, $latestVersion)
         }
     }
 }
