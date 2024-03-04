@@ -4,7 +4,8 @@ function Get-EmulatorInstanceName {
     $deviceToInstanceMap = @{
         'G011A'  = 'Android 7 DIGI KGB Hajara Banee Gmail 1-2-3 MEmu'
         'A5010'  = 'Android 7 DIGI KGB Ismail MEmu'
-        'b0qxxx' = 'Android 11 BlueStacks App Player'
+        'emulator-5554' = 'Android 11 BlueStacks App Player'
+        'emulator-5584' = 'Android 11 Banee Gmail BlueStacks App Player'
     }
 
     $instanceName = $deviceToInstanceMap[$deviceInfo]
@@ -13,8 +14,7 @@ function Get-EmulatorInstanceName {
         return $instanceName
     }
     else {
-        Write-Host "Emulator instance name not found for device: $deviceInfo"
-        exit
+        return $deviceInfo
     }
 }
 
@@ -41,14 +41,19 @@ $csvRows | Out-File -FilePath $outputFileNameCurrentFolder -Encoding UTF8
 Write-Host "CSV file '$outputFileNameCurrentFolder' created in the current folder."
 
 $outputFolder1 = 'C:\Lab_Data\configurations-private'
-$outputFolder2 = "C:\Lab_Data\Memu-Virtual-Appliances\$emulatorInstanceName"
 $outputFileNameFolder1 = Join-Path $outputFolder1 "${emulatorInstanceName} Packages.csv"
-$outputFileNameFolder2 = Join-Path $outputFolder2 "${emulatorInstanceName} Packages.csv"
-
 $csvRows | Out-File -FilePath $outputFileNameFolder1 -Encoding UTF8
-if ($deviceInfo -cne 'b0qxxx') {
+Write-Host "CSV file '$outputFileNameFolder1' created in folder '$outputFolder1'."
 
+if ($emulatorInstanceName -match 'MEmu') {
+    $outputFolder2 = "C:\Lab_Data\Memu-Virtual-Appliances\$emulatorInstanceName"
+    $outputFileNameFolder2 = Join-Path $outputFolder2 "${emulatorInstanceName} Packages.csv"
     $csvRows | Out-File -FilePath $outputFileNameFolder2 -Encoding UTF8
+    Write-Host "CSV file '$outputFileNameFolder2' created in folder '$outputFolder2'."
 }
-
-Write-Host "CSV files created in folders: '$outputFileNameFolder1', '$outputFileNameFolder2'"
+elseif ($emulatorInstanceName -match 'BlueStacks') {
+    $outputFolder2 = 'C:\Lab_Data\BlueStacks-Backups'
+    $outputFileNameFolder2 = Join-Path $outputFolder2 "${emulatorInstanceName} Packages.csv"
+    $csvRows | Out-File -FilePath $outputFileNameFolder2 -Encoding UTF8
+    Write-Host "CSV file '$outputFileNameFolder2' created in folder '$outputFolder2'."
+}
