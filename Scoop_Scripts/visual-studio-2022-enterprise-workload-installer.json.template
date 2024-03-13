@@ -1,0 +1,63 @@
+{
+    "version": "{latestVersion}",
+    "description": "Visual Studio Enterprise is a powerful, comprehensive IDE for developers designing, building, testing, and deploying complex applications for any platform—including the Microsoft stack. Workload Formal Name : {workloadFormalName}, Workload Description : {workloadDescription}",
+    "homepage": "https://visualstudio.microsoft.com/vs/",
+    "license": "Freemium",
+    "url": "https://aka.ms/vs/17/release/vs_enterprise.exe",
+    "hash": "{fileHash}",
+    "installer": {
+        "args": [
+            "--add=Microsoft.VisualStudio.Workload.{workloadInternalName}",
+            "--removeOos=true",
+            "--passive",
+            "--norestart",
+            "--wait"
+        ],
+        "keep": true
+    },
+    "uninstaller": {
+        "script": [
+            "function Clear-VisualStudio {",
+            "Start-Process -FilePath \"$dir\\vs_enterprise.exe\" -ArgumentList \"uninstall\", \"--channelId=VisualStudio.17\", \"--productId=Microsoft.VisualStudio.Product.Enterprise\", \"--passive\", \"--norestart\", \"--wait\" -Wait",
+            "Start-Process -FilePath \"${Env:ProgramFiles(x86)}\\Microsoft Visual Studio\\Installer\\vs_installer.exe\" -ArgumentList \"/uninstall\" -Wait",
+            "Remove-Item \"$([System.Environment]::GetFolderPath('commonstartmenu'))\\Programs\\Visual Studio Installer.lnk\"",
+            "}",
+            "$matchResult = Select-String -InputObject $app -Pattern '(?<visualStudioWorkloadApp>visual-studio-2022-enterprise-(?<visualStudioWorkloadInternalName>[a-z]+)(?<vSWorkloadAppRecommendedVariant>-recommended)?(?<vSWorkloadAppFullVariant>-full)?-installer)' | ForEach-Object -Process { $_.Matches }",
+            "$workloadInternalName = $matchResult.Groups[2].Value",
+            "$isIncludeRecommended = $matchResult.Groups[3].Success",
+            "$isIncludeOptional = $matchResult.Groups[4].Success",
+            "Start-Process -FilePath \"$dir\\vs_enterprise.exe\" -ArgumentList \"--remove=Microsoft.VisualStudio.Workload.$workloadInternalName$($isIncludeRecommended ? \";includeRecommended\":$null)$($isIncludeOptional ? \";includeOptional\":$null)\", \"--channelId=VisualStudio.17\", \"--productId=Microsoft.VisualStudio.Product.Enterprise\", \"--passive\", \"--norestart\", \"--wait\" -Wait",
+            "$installedVisualStudioWorkloads = & \"$(scoop prefix scoop)\\bin\\scoop.ps1\" list | Select-String -Pattern '(?<visualStudioWorkloadApp>visual-studio-2022-enterprise-(?<visualStudioWorkloadInternalName>[a-z]+)(?<vSWorkloadAppRecommendedVariant>-recommended)?(?<vSWorkloadAppFullVariant>-full)?-installer)' | ForEach-Object -Process { $_.Matches }",
+            "if ($cmd -ceq 'uninstall') {",
+            "if ($installedVisualStudioWorkloads -is [System.Text.RegularExpressions.Group]) {",
+            "Clear-VisualStudio",
+            "}",
+            "}",
+            "elseif ($cmd -ceq 'update') {",
+            "if ($installedVisualStudioWorkloads -is [System.Text.RegularExpressions.Group]) {",
+            "Clear-VisualStudio",
+            "}",
+            "else {",
+            "$otherInstalledVisualStudioWorkloads = $installedVisualStudioWorkloads | Where-Object -Property Value -CNE $app",
+            "$otherInstalledVisualStudioWorkloads | ForEach-Object -Process { scoop uninstall $_.Value }",
+            "Clear-VisualStudio",
+            "$isShowManifestEnabled = scoop config show_manifest",
+            "if ($isShowManifestEnabled){",
+            "scoop config show_manifest $false",
+            "}",
+            "$otherInstalledVisualStudioWorkloads | ForEach-Object -Process { scoop install \"$bucket/$($_.Value)\" }",
+            "if ($isShowManifestEnabled){",
+            "scoop config show_manifest $true",
+            "}",
+            "}",
+            "}"
+        ]
+    },
+    "checkver": {
+        "url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes",
+        "regex": ">Visual Studio 2022 version ([\\d.]+)<"
+    },
+    "autoupdate": {
+        "url": "https://aka.ms/vs/17/release/vs_enterprise.exe"
+    }
+}

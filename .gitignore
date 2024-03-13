@@ -1,6 +1,6 @@
 scoopReinstallHelper.ps1
 scoop_pacakges.txt
-/Scoop Manifests
+/Scoop_Scripts/Scoop Manifests
 /Android 7 DIGI KGB Hajara Banee Gmail 1-2-3 MEmu Packages *.csv
 /Android 7 DIGI KGB Ismail MEmu Packages *.csv
 /Android 11 BlueStacks App Player Packages *.csv
