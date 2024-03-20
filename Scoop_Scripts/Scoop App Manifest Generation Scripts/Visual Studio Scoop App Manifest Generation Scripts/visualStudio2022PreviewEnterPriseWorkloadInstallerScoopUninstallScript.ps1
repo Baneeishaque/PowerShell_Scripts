@@ -1,8 +1,8 @@
 function Clear-VisualStudio {
 
-    Write-Output "visualStudio uninstall command1: Start-Process -FilePath `"$dir\vs_enterprise.exe`" -ArgumentList `"uninstall`", `"--channelId=VisualStudio.17.Preview`", `"--productId=Microsoft.VisualStudio.Product.Enterprise`", `"--passive`", `"--norestart`", `"--wait`" -Wait"
-    Write-Output "visualStudio uninstall command2: Start-Process -FilePath `"${Env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe`" -ArgumentList `"/uninstall`" -Wait"
-    Write-Output "visualStudio uninstall command3: Remove-Item `"$([System.Environment]::GetFolderPath('commonstartmenu'))\Programs\Visual Studio Installer.lnk`""
+    Write-Output "Start-Process -FilePath `"$dir\vs_enterprise.exe`" -ArgumentList `"uninstall`", `"--channelId=VisualStudio.17.Preview`", `"--productId=Microsoft.VisualStudio.Product.Enterprise`", `"--passive`", `"--norestart`", `"--wait`" -Wait"
+    Write-Output "Start-Process -FilePath `"${Env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe`" -ArgumentList `"/uninstall`" -Wait"
+    Write-Output "Remove-Item `"$([System.Environment]::GetFolderPath('commonstartmenu'))\Programs\Visual Studio Installer.lnk`""
 }
 
 $bucket = 'versions-fork'
@@ -22,7 +22,7 @@ Write-Output "isIncludeOptional: $isIncludeOptional"
 $dir = scoop prefix $app
 Write-Output "dir: $dir"
 
-Write-Output "app uninstall command: Start-Process -FilePath `"$dir\vs_enterprise.exe`" -ArgumentList `"--remove=Microsoft.VisualStudio.Workload.$workloadInternalName$($isIncludeRecommended ? ";includeRecommended":$null)$($isIncludeOptional ? ";includeOptional":$null)`", `"--channelId=VisualStudio.17.Preview`", `"--productId=Microsoft.VisualStudio.Product.Enterprise`", `"--passive`", `"--norestart`", `"--wait`" -Wait"
+Write-Output "Start-Process -FilePath `"$dir\vs_enterprise.exe`" -ArgumentList `"--remove=Microsoft.VisualStudio.Workload.$workloadInternalName$($isIncludeRecommended ? ";includeRecommended":$null)$($isIncludeOptional ? ";includeOptional":$null)`", `"--channelId=VisualStudio.17.Preview`", `"--productId=Microsoft.VisualStudio.Product.Enterprise`", `"--passive`", `"--norestart`", `"--wait`" -Wait"
 
 $cmd = 'update'
 
