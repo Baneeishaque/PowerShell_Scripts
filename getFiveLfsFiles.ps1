@@ -1,14 +1,19 @@
-foreach ($entry in $(git lfs ls-files -l | Select-Object -First 10))
+$entries = git lfs ls-files -l
+$counter = 0
+
+foreach ($entry in $entries)
 {
-    # Split the entry based on ' - '
-    $parts = $entry -split ' - '
+    # Write-Output $entry
 
-    # Concatenate the elements excluding the first one as a single string
-    $concatenatedString = $parts[1..($parts.Length - 1)] -join ' - '
+    $parts = $entry -split ' '
+    if ($parts[1] -eq '-' -and $counter -lt 10)
+    {
+        $concatenatedString = $parts[2..($parts.Length - 1)] -join ' '
+        Write-Output $concatenatedString
 
-    Write-Output $parts[0]
-    Write-Output $concatenatedString
+        git lfs pull --include="$concatenatedString"
+        git checkout -- "$concatenatedString"
 
-    git lfs fetch --include=$concatenatedString
-    git checkout $concatenatedString
+        $counter++
+    }
 }
