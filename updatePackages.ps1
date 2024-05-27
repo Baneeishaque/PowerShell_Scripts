@@ -4,13 +4,15 @@ Write-Output 'Sqlyog Backup Jobs'
 Write-Output '------------------------------'
 Start-Process -FilePath 'C:\Program Files\SQLyog Trial\SJA.exe' -ArgumentList '"C:\Lab_Data\Account-Ledger-Server\db_backup_jobs\nomadller_hostinger_temp_Avita-Windows.xml" -l"C:\Users\dk\AppData\Roaming\SQLyog\sja.log" -s"C:\Users\dk\AppData\Roaming\SQLyog\sjasession.xml"' -Wait
 
+Set-Location "$scriptDirectory"
+
 Write-Output 'PowerShell Modules Backup'
 Write-Output '------------------------------'
-. "$scriptDirectory\PowerShell_Modules_Scripts\CallSave-ModuleInfo.ps1"
+. "PowerShell_Modules_Scripts\CallSave-ModuleInfo.ps1"
 
 Write-Output 'Optimize Scoop Cache'
 Write-Output '------------------------------'
-. "$scriptDirectory\Scoop_Scripts\Optimize-ScoopCache.ps1"
+. "Scoop_Scripts\Optimize-ScoopCache.ps1"
 Optimize-ScoopCache -dryRun $false
 
 Write-Output 'Update Windows Store Apps'
