@@ -47,5 +47,4 @@ $latestVersion = Select-String -InputObject $( Invoke-WebRequest -Uri 'https://l
 $fileHash = Get-FileHash -url 'https://aka.ms/vs/17/pre/vs_enterprise.exe'
 New-Manifests -latestVersion $latestVersion -fileHash $fileHash -varient "-preview"
 
-
 Update-ScoopManifests
