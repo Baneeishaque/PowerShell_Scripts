@@ -26,26 +26,26 @@ Write-Output "Start-Process -FilePath `"$dir\vs_enterprise.exe`" -ArgumentList `
 
 $cmd = 'update'
 
-$installedVisualStudioWorkloads = & "$(scoop prefix scoop)\bin\scoop.ps1" list | Select-String -Pattern '(?<visualStudioWorkloadApp>visual-studio-2022-preview-enterprise-(?<visualStudioWorkloadInternalName>[a-z]+)(?<vSWorkloadAppRecommendedVariant>-recommended)?(?<vSWorkloadAppFullVariant>-full)?-installer)' | ForEach-Object -Process { $_.Matches }
-Write-Output "installedVisualStudioWorkloads: $installedVisualStudioWorkloads"
-Write-Output "installedVisualStudioWorkloads Type: $($installedVisualStudioWorkloads.GetType())"
+$installedVisualStudioPreviewWorkloads = & "$(scoop prefix scoop)\bin\scoop.ps1" list | Select-String -Pattern '(?<visualStudioWorkloadApp>visual-studio-2022-preview-enterprise-(?<visualStudioWorkloadInternalName>[a-z]+)(?<vSWorkloadAppRecommendedVariant>-recommended)?(?<vSWorkloadAppFullVariant>-full)?-installer)' | ForEach-Object -Process { $_.Matches }
+Write-Output "installedVisualStudioPreviewWorkloads: $installedVisualStudioPreviewWorkloads"
+Write-Output "installedVisualStudioPreviewWorkloads Type: $($installedVisualStudioPreviewWorkloads.GetType())"
 
 if ($cmd -ceq 'uninstall') {
 
-    if ($installedVisualStudioWorkloads -is [System.Text.RegularExpressions.Group]) {
+    if ($installedVisualStudioPreviewWorkloads -is [System.Text.RegularExpressions.Group]) {
 
         Clear-VisualStudio
     }
 }
 elseif ($cmd -ceq 'update') {
 
-    if ($installedVisualStudioWorkloads -is [System.Text.RegularExpressions.Group]) {
+    if ($installedVisualStudioPreviewWorkloads -is [System.Text.RegularExpressions.Group]) {
 
         Clear-VisualStudio
     }
     else {
 
-        $otherInstalledVisualStudioWorkloads = $installedVisualStudioWorkloads | Where-Object -Property Value -CNE $app
+        $otherInstalledVisualStudioWorkloads = $installedVisualStudioPreviewWorkloads | Where-Object -Property Value -CNE $app
         Write-Output "otherInstalledVisualStudioWorkloads: $otherInstalledVisualStudioWorkloads"
         $otherInstalledVisualStudioWorkloads | ForEach-Object -Process { Write-Output "scoop uninstall $($_.Value)" }
         Clear-VisualStudio
