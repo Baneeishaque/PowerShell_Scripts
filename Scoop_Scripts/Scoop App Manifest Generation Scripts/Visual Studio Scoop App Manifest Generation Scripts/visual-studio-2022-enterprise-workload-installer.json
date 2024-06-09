@@ -19,8 +19,11 @@
         "script": [
             "function Clear-VisualStudio {",
             "Start-Process -FilePath \"$dir\\vs_enterprise.exe\" -ArgumentList \"uninstall\", \"--channelId=VisualStudio.17\", \"--productId=Microsoft.VisualStudio.Product.Enterprise\", \"--passive\", \"--norestart\", \"--wait\" -Wait",
+            "$installedVisualStudioPreviewWorkloads = & \"$(scoop prefix scoop)\\bin\\scoop.ps1\" list | Select-String -Pattern '(?<visualStudioWorkloadApp>visual-studio-2022-preview-enterprise-(?<visualStudioWorkloadInternalName>[a-z]+)(?<vSWorkloadAppRecommendedVariant>-recommended)?(?<vSWorkloadAppFullVariant>-full)?-installer)' | ForEach-Object -Process { $_.Matches }",
+            "if ($installedVisualStudioPreviewWorkloads.Count -eq 0){",
             "Start-Process -FilePath \"${Env:ProgramFiles(x86)}\\Microsoft Visual Studio\\Installer\\vs_installer.exe\" -ArgumentList \"/uninstall\" -Wait",
             "Remove-Item \"$([System.Environment]::GetFolderPath('commonstartmenu'))\\Programs\\Visual Studio Installer.lnk\"",
+            "}",
             "}",
             "$matchResult = Select-String -InputObject $app -Pattern '(?<visualStudioWorkloadApp>visual-studio-2022-enterprise-(?<visualStudioWorkloadInternalName>[a-z]+)(?<vSWorkloadAppRecommendedVariant>-recommended)?(?<vSWorkloadAppFullVariant>-full)?-installer)' | ForEach-Object -Process { $_.Matches }",
             "$workloadInternalName = $matchResult.Groups[2].Value",

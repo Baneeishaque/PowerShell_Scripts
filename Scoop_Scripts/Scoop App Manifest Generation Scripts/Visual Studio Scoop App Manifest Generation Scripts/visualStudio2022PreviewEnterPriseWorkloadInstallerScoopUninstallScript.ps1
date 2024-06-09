@@ -1,8 +1,13 @@
 function Clear-VisualStudio {
 
     Write-Output "Start-Process -FilePath `"$dir\vs_enterprise.exe`" -ArgumentList `"uninstall`", `"--channelId=VisualStudio.17.Preview`", `"--productId=Microsoft.VisualStudio.Product.Enterprise`", `"--passive`", `"--norestart`", `"--wait`" -Wait"
-    Write-Output "Start-Process -FilePath `"${Env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe`" -ArgumentList `"/uninstall`" -Wait"
-    Write-Output "Remove-Item `"$([System.Environment]::GetFolderPath('commonstartmenu'))\Programs\Visual Studio Installer.lnk`""
+
+    $installedVisualStudioWorkloads = & "$(scoop prefix scoop)\\bin\\scoop.ps1" list | Select-String -Pattern '(?<visualStudioWorkloadApp>visual-studio-2022-enterprise-(?<visualStudioWorkloadInternalName>[a-z]+)(?<vSWorkloadAppRecommendedVariant>-recommended)?(?<vSWorkloadAppFullVariant>-full)?-installer)' | ForEach-Object -Process { $_.Matches }
+    if ($installedVisualStudioWorkloads.Count -eq 0){
+
+        Write-Output "Start-Process -FilePath `"${Env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe`" -ArgumentList `"/uninstall`" -Wait"
+        Write-Output "Remove-Item `"$([System.Environment]::GetFolderPath('commonstartmenu'))\Programs\Visual Studio Installer.lnk`""
+    }
 }
 
 $bucket = 'versions-fork'
