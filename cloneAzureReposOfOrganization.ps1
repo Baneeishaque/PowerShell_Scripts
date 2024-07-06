@@ -11,13 +11,15 @@ $projObjs = $adoprojs | ConvertFrom-Json
 foreach ($proj in $projObjs.value.name) {
 	write-host "looking in $proj ADO project for repos"
 	# set to specific ADO project
-	az devops configure --defaults organization=https://dev.azure.com/banee-ishaque-k-azure-devops-works project=$proj
+	# az devops configure --defaults organization=https://dev.azure.com/banee-ishaque-k-azure-devops-works project=$proj
 	# now get it's repos (in json)
-	$jsonRepos = az repos list
+	$jsonRepos = az repos list --organization https://dev.azure.com/banee-ishaque-k-azure-devops-works --project $proj
 	# convert repos from json format to powershell object
 	$RepoObjs = $jsonRepos | ConvertFrom-Json
 	# now list each repo
 	foreach ($repo in $RepoObjs) {
 		write-host "  " $repo.name
+		write-host "  " $repo.size
+		write-host "  " $repo.webUrl
 	}
 }
