@@ -4,6 +4,7 @@ function Get-EmulatorInstanceName {
     $deviceToInstanceMap = @{
         'G011A'  = 'Android 7 DIGI KGB Hajara Banee Gmail 1-2-3 MEmu'
         'A5010'  = 'Android 7 DIGI KGB Ismail MEmu'
+		'SM-G935FD' = 'Android 9 Banee Gmail 1-2 MEmu'
         'b0qxxx' = 'Android 11 BlueStacks App Player'
         'r0qxxx' = 'Android 11 Banee Gmail BlueStacks App Player'
     }
@@ -22,7 +23,7 @@ $deviceInfos = (adb devices -l | Select-String 'device product:')
 
 foreach ($deviceInfo in $deviceInfos) {
 
-    $deviceId = $deviceId = ($deviceInfo -replace '(\w+)\s+device.*', '$1')
+    $deviceId = ($deviceInfo -replace '(\w+)\s+device.*', '$1')
     $deviceInfo = $deviceInfo -replace '.*device product:(.+?)\s+model:.+?\s+device:.+?\s+transport_id:\d+', '$1'
     $emulatorInstanceName = Get-EmulatorInstanceName -deviceInfo $deviceInfo
 
