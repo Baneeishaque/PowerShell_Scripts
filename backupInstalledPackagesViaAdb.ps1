@@ -5,6 +5,7 @@ function Get-EmulatorInstanceName {
         'G011A'  = 'Android 7 DIGI KGB Hajara Banee Gmail 1-2-3 MEmu'
         'A5010'  = 'Android 7 DIGI KGB Ismail MEmu'
 		'SM-G935FD' = 'Android 9 Banee Gmail 1-2 MEmu'
+		'ASUS_Z01QD' = 'Android 9 MEmu Bing'
         'b0qxxx' = 'Android 11 BlueStacks App Player'
         'r0qxxx' = 'Android 11 Banee Gmail BlueStacks App Player'
     }
