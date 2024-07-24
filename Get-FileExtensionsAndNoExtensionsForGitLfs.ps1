@@ -13,7 +13,7 @@ $dirExtensions = $dirExtensionsWithNoExtensionFiles[0] | ForEach-Object { $_.Tri
 $gitAttrExtensions = Get-Content .\.gitattributes | ForEach-Object {if ($_ -match "\*\.(.+) filter") {$matches[1]}}
 
 # Define a list of common extensions
-$commonExtensions = @('gitattributes', 'gif', 'jpg', 'nfo', 'png', 'webp', 'avif')
+$commonExtensions = @('gitattributes', 'txt', 'csv', 'json', 'css', 'html', 'svg', 'gif', 'jpg', 'nfo', 'png', 'webp', 'avif', 'pem', 'sql')
 
 # Combine common extensions and gitAttrExtensions
 $combinedExtensions = $commonExtensions + $gitAttrExtensions
