@@ -31,7 +31,7 @@ function Optimize-ScoopCache {
     foreach ($entry in $sortedHashTable) {
 
         # Get the scoop search output for the app
-        $searchOutput = & "$(scoop prefix scoop)\bin\scoop.ps1" search $entry.Key 2>$null
+        $searchOutput = & "$(scoop prefix scoop)\bin\scoop.ps1" search $entry.Key
 
         # Filter the search output for objects where the name is exactly the same as the app name
         $filteredSearchOutput = $searchOutput | Where-Object { $_.Name -eq $entry.Key }
