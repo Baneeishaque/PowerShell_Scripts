@@ -44,7 +44,20 @@ function Optimize-ScoopCache {
         if ($filteredSearchOutput) {
             $versionInCache = $entry.Group[0].Version
 
-            if ($filteredSearchOutput.GetType().Name -eq 'PSCustomObject') {
+            if ($filteredSearchOutput -is [System.Array]) {
+                # Multiple sources found; compare each object
+                foreach ($source in $filteredSearchOutput) {
+                    $latestVersion = $source.Version
+                    if ($latestVersion -eq $versionInCache) {
+                        $output += "Cache for app $appName is up-to-date with version $latestVersion (from $($source.Source))."
+                    }
+                    else {
+                        $output += "Another version of $appName exists in $($source.Source) (version: $latestVersion)."
+                    }
+                }
+            }
+            elseif ($filteredSearchOutput -is [PSCustomObject]) {
+                # Single source found
                 $latestVersion = $filteredSearchOutput.Version
                 if ($latestVersion -ne $versionInCache) {
                     if ($dryRun) {
@@ -60,7 +73,7 @@ function Optimize-ScoopCache {
                 }
             }
             else {
-                $output += "The type of `$filteredSearchOutput for $appName is not PSCustomObject, it is $($filteredSearchOutput.GetType().Name)."
+                $output += "Unexpected type for `$filteredSearchOutput for $appName."
             }
         }
         else {
