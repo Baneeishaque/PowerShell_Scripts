@@ -51,33 +51,37 @@ function Optimize-ScoopCache {
             continue
         }
 
-        # Convert the Version attribute of each object in filteredSearchOutput to System.Version
-        $filteredSearchOutput = $filteredSearchOutput | ForEach-Object {
-            $_.Version = New-Object System.Version $_.Version
-            $_
-        }
+        # Write-Output ('{0} {1}' -f $entry.Key, $filteredSearchOutput.GetType().Name)
 
-        # Sort the filtered search output by version (as Version objects) and select the object with the latest version
-        $latestObject = $filteredSearchOutput | Sort-Object Version -Descending | Select-Object -First 1
+        if ($filteredSearchOutput.GetType().Name -eq 'PSCustomObject') {
 
-        # Extract the Bucket and the latest Version from the latest object
-        $latestVersion = $latestObject.Version
+            # Extract the Bucket and the latest Version from the latest object
+            $latestVersion = $filteredSearchOutput.Version
 
-        # Get the Version from the cache show hashtable
-        $version = $entry.Value.Version
+            # Get the Version from the cache show hashtable
+            $version = $entry.Value.Version
 
-        # If the latest version is not in the cache, print a message that the cache file for the app would be removed
-        if ([System.Version] $version -lt $latestVersion) {
-            if ($dryRun) {
-                Write-Output ('Would remove cache for app {0} as the latest version {1} was not in the cache.' -f $entry.Key, $latestVersion)
+            # If the latest version is not in the cache, print a message that the cache file for the app would be removed
+            if ($latestVersion -eq $version) {
+
+                Write-Output ('Cache for app {0} is up-to-date with the latest version {1}.' -f $entry.Key, $latestVersion)
             }
             else {
-                & "$(scoop prefix scoop)\bin\scoop.ps1" cache rm $entry.Key
-                Write-Output ('Removed cache for app {0} as the latest version {1} was not in the cache.' -f $entry.Key, $latestVersion)
+
+                if ($dryRun) {
+
+                    Write-Output ('Would remove cache for app {0} as the latest version {1} was not in the cache.' -f $entry.Key, $latestVersion)
+                }
+                else {
+
+                    & "$(scoop prefix scoop)\bin\scoop.ps1" cache rm $entry.Key
+                    Write-Output ('Removed cache for app {0} as the latest version {1} was not in the cache.' -f $entry.Key, $latestVersion)
+                }
             }
         }
         else {
-            Write-Output ('Cache for app {0} is up-to-date with the latest version {1}.' -f $entry.Key, $latestVersion)
+
+            Write-Output ('The type of `$filteredSearchOutput for {0} is not PSCustomObject, it is {1}' -f $filteredSearchOutput.GetType().Name, $entry.Key)
         }
     }
 }
