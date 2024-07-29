@@ -1,4 +1,5 @@
 function Optimize-ScoopCache {
+
     param(
         [bool]$dryRun = $true
     )
@@ -9,8 +10,10 @@ function Optimize-ScoopCache {
     # Create a hashtable to store the name and version from the cache show output
     $cacheShowHashTable = @{}
     foreach ($object in $cacheShowOutput) {
+
         # If the name already exists in the hashtable, continue to the next iteration
         if ($cacheShowHashTable.ContainsKey($object.Name)) {
+
             continue
         }
 
@@ -23,6 +26,7 @@ function Optimize-ScoopCache {
 
     # Iterate over each object in the sorted hashtable
     foreach ($entry in $sortedHashTable) {
+
         # Get the scoop search output for the app
         $searchOutput = & "$(scoop prefix scoop)\bin\scoop.ps1" search $entry.Key 2>$null
 
@@ -31,10 +35,13 @@ function Optimize-ScoopCache {
 
         # If no matching app is found in the search output, print a message that the cache file for the app would be removed
         if ($filteredSearchOutput.Count -eq 0) {
+
             if ($dryRun) {
+
                 Write-Output ('Would remove cache for app {0} as no matching app was found in the search output.' -f $entry.Key)
             }
             else {
+
                 & "$(scoop prefix scoop)\bin\scoop.ps1" cache rm $entry.Key
                 Write-Output ('Removed cache for app {0} as no matching app was found in the search output.' -f $entry.Key)
             }
