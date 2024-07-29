@@ -1,8 +1,12 @@
 function Optimize-ScoopCache {
 
+    [OutputType([String[]])]
+
     param(
         [bool]$dryRun = $true
     )
+
+    $output = @()
 
     # Run the scoop cache show command and store the output in a variable
     $cacheShowOutput = & "$(scoop prefix scoop)\bin\scoop.ps1" cache show
@@ -41,12 +45,12 @@ function Optimize-ScoopCache {
 
             if ($dryRun) {
 
-                Write-Output ('Would remove cache for app {0} as no matching app was found in the search output.' -f $entry.Key)
+                $output += ('Would remove cache for app {0} as no matching app was found in the search output.' -f $entry.Key)
             }
             else {
 
                 & "$(scoop prefix scoop)\bin\scoop.ps1" cache rm $entry.Key
-                Write-Output ('Removed cache for app {0} as no matching app was found in the search output.' -f $entry.Key)
+                $output += ('Removed cache for app {0} as no matching app was found in the search output.' -f $entry.Key)
             }
             continue
         }
@@ -64,24 +68,26 @@ function Optimize-ScoopCache {
             # If the latest version is not in the cache, print a message that the cache file for the app would be removed
             if ($latestVersion -eq $version) {
 
-                Write-Output ('Cache for app {0} is up-to-date with the latest version {1}.' -f $entry.Key, $latestVersion)
+                $output += ('Cache for app {0} is up-to-date with the latest version {1}.' -f $entry.Key, $latestVersion)
             }
             else {
 
                 if ($dryRun) {
 
-                    Write-Output ('Would remove cache for app {0} as the latest version {1} was not in the cache.' -f $entry.Key, $latestVersion)
+                    $output += ('Would remove cache for app {0} as the latest version {1} was not in the cache.' -f $entry.Key, $latestVersion)
                 }
                 else {
 
                     & "$(scoop prefix scoop)\bin\scoop.ps1" cache rm $entry.Key
-                    Write-Output ('Removed cache for app {0} as the latest version {1} was not in the cache.' -f $entry.Key, $latestVersion)
+                    $output += ('Removed cache for app {0} as the latest version {1} was not in the cache.' -f $entry.Key, $latestVersion)
                 }
             }
         }
         else {
 
-            Write-Output ('The type of `$filteredSearchOutput for {0} is not PSCustomObject, it is {1}' -f $filteredSearchOutput.GetType().Name, $entry.Key)
+            $output += ('The type of `$filteredSearchOutput for {0} is not PSCustomObject, it is {1}' -f $entry.Key, $filteredSearchOutput.GetType().Name)
         }
     }
+
+    $output
 }
