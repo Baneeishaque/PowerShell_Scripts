@@ -24,6 +24,9 @@ function Optimize-ScoopCache {
     # Sort the hashtable by key (app name)
     $sortedHashTable = $cacheShowHashTable.GetEnumerator() | Sort-Object Key
 
+    # Update scoop & it's buckets
+    & "$(scoop prefix scoop)\bin\scoop.ps1" update
+
     # Iterate over each object in the sorted hashtable
     foreach ($entry in $sortedHashTable) {
 
