@@ -1,0 +1,6 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Scoop_Scripts\CallOptimizeScoopCache.ps1" type="PowerShellRunType" factoryName="PowerShell" scriptUrl="C:\Lab_Data\PowerShell_Scripts\Scoop_Scripts\CallOptimizeScoopCache.ps1" executablePath="$USER_HOME$/scoop/shims/pwsh.exe">
+    <envs />
+    <method v="2" />
+  </configuration>
+</component>

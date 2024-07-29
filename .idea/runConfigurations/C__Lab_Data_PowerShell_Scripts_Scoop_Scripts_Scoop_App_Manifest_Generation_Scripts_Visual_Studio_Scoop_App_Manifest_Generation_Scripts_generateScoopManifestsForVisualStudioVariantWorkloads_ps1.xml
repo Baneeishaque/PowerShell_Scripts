@@ -1,6 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="C:\Lab_Data\PowerShell_Scripts\Scoop_Scripts\Scoop App Manifest Generation Scripts\Visual Studio Scoop App Manifest Generation Scripts\generateScoopManifestsForVisualStudioVariantWorkloads.ps1" type="PowerShellRunType" factoryName="PowerShell" scriptUrl="C:\Lab_Data\PowerShell_Scripts\Scoop_Scripts\Scoop App Manifest Generation Scripts\Visual Studio Scoop App Manifest Generation Scripts\generateScoopManifestsForVisualStudioVariantWorkloads.ps1" workingDirectory="$FileParentDir$" executablePath="pwsh.exe">
-    <envs />
-    <method v="2" />
-  </configuration>
-</component>
