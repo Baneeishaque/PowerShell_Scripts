@@ -1,11 +1,11 @@
-# $(Invoke-WebRequest -Uri "https://github.com/telegramdesktop/tdesktop/releases/").Content -match 'tag/v([\d.]+).+\s.+">(.+)<'
-# $Matches
+$betaVersion = [System.Version]$(Select-String -InputObject $(Invoke-WebRequest -Uri "https://telegram.org/dl/desktop/win64_portable?beta=1").BaseResponse.RequestMessage.RequestUri.AbsoluteUri -Pattern 'tportable-x64\.(.+)\.beta.zip').Matches.Groups[1].Value
+# $betaVersion
 
-$latest = Select-String -InputObject $(Invoke-WebRequest -Uri "https://github.com/telegramdesktop/tdesktop/releases/").Content -Pattern 'tag/v([\d.]+).+\s.+">(.+)<'
-if($latest.Matches.Groups[2].Value -ceq 'Pre-release'){
-    $betaOrStable = '.beta'
+$stableVersion = [System.Version]$(Select-String -InputObject $(Invoke-WebRequest -Uri "https://telegram.org/dl/desktop/win64_portable").BaseResponse.RequestMessage.RequestUri.AbsoluteUri -Pattern 'tportable-x64\.(.+)\.zip').Matches.Groups[1].Value
+# $stableVersion
+
+if($betaVersion -gt $stableVersion){
+    Write-Output "$betaVersion .beta"
+}else{
+    Write-Output "$stableVersion"
 }
-else{
-    $betaOrStable = ''
-}
-Write-Output "$($latest.Matches.Groups[1].Value)$betaOrStable"
