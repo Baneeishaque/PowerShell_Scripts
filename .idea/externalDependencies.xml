@@ -3,5 +3,6 @@
   <component name="ExternalDependencies">
     <plugin id="String Manipulation" />
     <plugin id="com.intellij.plugin.adernov.powershell" />
+    <plugin id="org.jetbrains.plugins.terminal" />
   </component>
 </project>
