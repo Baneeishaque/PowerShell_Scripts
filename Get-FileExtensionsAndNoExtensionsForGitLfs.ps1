@@ -15,7 +15,7 @@ $gitAttrExtensions = Get-Content .\.gitattributes | ForEach-Object {if ($_ -matc
 # $gitAttrExtensions.GetType()
 
 # Define a list of common extensions
-$commonExtensions = @('gitattributes', 'txt', 'csv', 'json', 'css', 'html', 'svg', 'gif', 'jpg', 'nfo', 'png', 'webp', 'avif', 'pem', 'sql')
+$commonExtensions = @('gitattributes', 'txt', 'csv', 'json', 'css', 'html', 'svg', 'gif', 'jpg', 'jpeg', 'nfo', 'png', 'webp', 'avif', 'pem', 'sql', 'eml', 'inf', 'Lst', 'LST', 'vcf', 'xdr', 'xsd')
 
 # Combine common extensions and gitAttrExtensions
 $combinedExtensions = $commonExtensions + $gitAttrExtensions
