@@ -25,12 +25,13 @@ $combinedExtensions = $commonExtensions + $gitAttrExtensions
 $filteredDirExtensions = $dirExtensions | Where-Object {$combinedExtensions -notcontains $_}
 # $filteredDirExtensions.GetType()
 
-$filteredDirExtensionsWithNoExtensionFiles = $filteredDirExtensions + $dirExtensionsWithNoExtensionFiles[1]
 # Write-Output (Get-Location).Path
 # Write-Output "$([Environment]::NewLine)"
 # $dirExtensionsWithNoExtensionFiles[1][0]
+$dirExtensionsWithNoExtensionFiles[1] = $dirExtensionsWithNoExtensionFiles[1] | ForEach-Object { $_ -replace "$((Get-Location).Path)/", "" }
 # Write-Output "$([Environment]::NewLine)"
 # $dirExtensionsWithNoExtensionFiles[1][0]
+$filteredDirExtensionsWithNoExtensionFiles = @($filteredDirExtensions) + $dirExtensionsWithNoExtensionFiles[1]
 
 
 # Output the filtered list
