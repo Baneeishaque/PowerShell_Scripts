@@ -29,7 +29,7 @@ foreach ($scoopDir in $scoopDirs) {
             # If the 'homepage' field exists
             if ($jsonObject.PSObject.Properties.Name -contains "homepage") {
 
-                Write-Output "$(Split-Path $jsonFile.FullName -Leaf | % { [IO.Path]::GetFileNameWithoutExtension($_) }) $($jsonObject.homepage) $($jsonObject.version)"
+                Write-Output "$(Split-Path $jsonFile.FullName -Leaf | ForEach-Object { [IO.Path]::GetFileNameWithoutExtension($_) }) $($jsonObject.homepage) $($jsonObject.version)"
             }
         }
     }
