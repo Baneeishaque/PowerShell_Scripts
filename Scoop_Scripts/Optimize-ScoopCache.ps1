@@ -42,38 +42,83 @@ function Optimize-ScoopCache {
         $filteredSearchOutput = $searchOutput | Where-Object { $_.Name -eq $appName }
 
         if ($filteredSearchOutput) {
-            $versionInCache = $entry.Group[0].Version
+            foreach ($cacheItem in $entry.Group) {
+                $versionInCache = $cacheItem.Version
 
-            if ($filteredSearchOutput -is [System.Array]) {
-                # Multiple sources found; compare each object
-                foreach ($source in $filteredSearchOutput) {
-                    $latestVersion = $source.Version
-                    if ($latestVersion -eq $versionInCache) {
-                        $output += "Cache for app $appName is up-to-date with version $latestVersion (from $($source.Source))."
+                if ($filteredSearchOutput -is [System.Array]) {
+                    # Multiple sources found; check if the app is installed
+                    $listOutput = & "$(scoop prefix scoop)\bin\scoop.ps1" list
+                    $installedApp = $listOutput | Where-Object { $_.Name -eq $appName }
+
+                    if ($installedApp) {
+                        $installedVersion = $installedApp.Version
+                        $installedSource = $installedApp.Source
+
+                        foreach ($source in $filteredSearchOutput) {
+                            if ($source.Source -eq $installedSource) {
+                                $latestVersion = $source.Version
+                                if ($latestVersion -ne $versionInCache) {
+                                    if ($dryRun) {
+                                        $output += "Would remove cache for app $appName (version in cache: $versionInCache, latest version: $latestVersion)."
+                                    }
+                                    else {
+                                        & "$(scoop prefix scoop)\bin\scoop.ps1" cache rm $appName
+                                        $output += "Removed cache for app $appName (version in cache: $versionInCache, latest version: $latestVersion)."
+                                    }
+                                }
+                                else {
+                                    $output += "Cache for app $appName is up-to-date with version $latestVersion."
+                                }
+                            }
+                        }
                     }
                     else {
-                        $output += "Another version of $appName exists in $($source.Source) (version: $latestVersion)."
+                        # App not installed, check every source
+                        $versionMatches = $false
+                        foreach ($source in $filteredSearchOutput) {
+                            $latestVersion = $source.Version
+                            if ($latestVersion -eq $versionInCache) {
+                                $versionMatches = $true
+                                $output += "Cache for app $appName is up-to-date with version $latestVersion (from $($source.Source))."
+                            }
+                        }
+                        if ($versionMatches) {
+                            foreach ($source in $filteredSearchOutput) {
+                                if ($source.Version -ne $versionInCache) {
+                                    $output += "Another version of $appName exists in $($source.Source) (version: $($source.Version))."
+                                }
+                            }
+                        }
+                        else {
+                            if ($dryRun) {
+                                $output += "Would remove cache for app $appName (version in cache: $versionInCache)."
+                            }
+                            else {
+                                & "$(scoop prefix scoop)\bin\scoop.ps1" cache rm $appName
+                                $output += "Removed cache for app $appName (version in cache: $versionInCache)."
+                            }
+                        }
                     }
                 }
-            }
-            elseif ($filteredSearchOutput -is [PSCustomObject]) {
-                # Single source found
-                $latestVersion = $filteredSearchOutput.Version
-                if ($latestVersion -ne $versionInCache) {
-                    if ($dryRun) {
-                        $output += "Would remove cache for app $appName (latest version: $latestVersion)."
+                elseif ($filteredSearchOutput -is [PSCustomObject]) {
+                    # Single source found
+                    $latestVersion = $filteredSearchOutput.Version
+                    if ($latestVersion -ne $versionInCache) {
+                        if ($dryRun) {
+                            $output += "Would remove cache for app $appName (version in cache: $versionInCache, latest version: $latestVersion)."
+                        }
+                        else {
+                            & "$(scoop prefix scoop)\bin\scoop.ps1" cache rm $appName
+                            $output += "Removed cache for app $appName (version in cache: $versionInCache, latest version: $latestVersion)."
+                        }
                     }
                     else {
-                        & "$(scoop prefix scoop)\bin\scoop.ps1" cache rm $appName
-                        $output += "Removed cache for app $appName (latest version: $latestVersion)."
+                        $output += "Cache for app $appName is up-to-date with version $latestVersion."
                     }
                 }
                 else {
-                    $output += "Cache for app $appName is up-to-date with version $latestVersion."
+                    $output += "Unexpected type for `$filteredSearchOutput for $appName."
                 }
-            }
-            else {
-                $output += "Unexpected type for `$filteredSearchOutput for $appName."
             }
         }
         else {
