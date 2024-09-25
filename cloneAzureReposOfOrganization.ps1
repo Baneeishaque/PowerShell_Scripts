@@ -1,25 +1,27 @@
-# will be prompted to log in via browser
-# az login
+# Log in to Azure DevOps
+# az devops login
 
-# get all your ADO projects in your org in json format
+# List all projects in the organization
 $adoprojs = az devops project list --organization https://dev.azure.com/banee-ishaque-k-azure-devops-works
-
-# convert to powershell object
 $projObjs = $adoprojs | ConvertFrom-Json
 
-# loop through each ADO project and find it's repos
-foreach ($proj in $projObjs.value.name) {
-	write-host "looking in $proj ADO project for repos"
-	# set to specific ADO project
-	# az devops configure --defaults organization=https://dev.azure.com/banee-ishaque-k-azure-devops-works project=$proj
-	# now get it's repos (in json)
-	$jsonRepos = az repos list --organization https://dev.azure.com/banee-ishaque-k-azure-devops-works --project $proj
-	# convert repos from json format to powershell object
-	$RepoObjs = $jsonRepos | ConvertFrom-Json
-	# now list each repo
-	foreach ($repo in $RepoObjs) {
-		write-host "  " $repo.name
-		write-host "  " $repo.size
-		write-host "  " $repo.webUrl
-	}
+# Iterate through each project
+foreach ($proj in $projObjs.value) {
+    write-host "Looking in $($proj.name) ADO project for repos"
+    
+    # List all repositories in the project
+    $jsonRepos = az repos list --organization https://dev.azure.com/banee-ishaque-k-azure-devops-works --project $proj.name
+    $RepoObjs = $jsonRepos | ConvertFrom-Json
+    
+    # Iterate through each repository
+    foreach ($repo in $RepoObjs) {
+        write-host "  " $repo.name
+        write-host "  " $repo.size
+        write-host "  " $repo.webUrl
+        
+        # Clone the repository if its size is greater than 0
+        if ($repo.size -gt 0) {
+            git clone $repo.remoteUrl
+        }
+    }
 }
