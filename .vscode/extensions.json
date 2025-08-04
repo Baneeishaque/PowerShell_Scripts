@@ -6,6 +6,7 @@
     "github.copilot-chat",
     "github.vscode-pull-request-github",
     "Google.geminicodeassist",
+    "ms-vscode.powershell",
     "nick-rudenko.back-n-forth",
     "pkief.material-icon-theme",
     "quentinguidee.gitignore-ultimate",
@@ -20,7 +21,7 @@
     "vscode.merge-conflict",
     "vscode.references-view",
     "vscode.search-result",
-    "vscode.terminal-suggest",
-    "ms-vscode.powershell"
+    "vscode.terminal-suggest"
   ]
 }
+
