@@ -2,8 +2,6 @@
   "recommendations": [
     "eamodio.gitlens",
     "fittentech.fitten-code",
-    "github.copilot",
-    "github.copilot-chat",
     "github.vscode-pull-request-github",
     "ms-vscode.powershell",
     "nick-rudenko.back-n-forth",
@@ -25,8 +23,12 @@
     "quentinguidee.gitignore-ultimate"
   ],
   "additionalRecommendations": [
-    "Google.geminicodeassist",
-    "TaichiKubo.dired-plus"
+    "google.geminicodeassist",
+    "taichiKubo.dired-plus"
+  ],
+  "onlyVscodeSupported": [
+    "github.copilot",
+    "github.copilot-chat"
   ]
 }
 
