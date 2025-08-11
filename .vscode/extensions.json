@@ -24,7 +24,7 @@
   ],
   "additionalRecommendations": [
     "google.geminicodeassist",
-    "taichiKubo.dired-plus"
+    "taichikubo.dired-plus"
   ],
   "onlyVscodeSupported": [
     "github.copilot",
