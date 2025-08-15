@@ -3,10 +3,10 @@
 .SYNOPSIS
     Smart sync for Warp AI Agent rules documentation
 .DESCRIPTION
-    Intelligently syncs Warp AI rules to agent-rules.md with throttling and git integration.
-    Compatible with Windows PowerShell 5.1+ and PowerShell Core 7+.
+    Prepares and validates Warp AI rules sync to agent-rules.md with git integration.
+    Checks if rules file is clean and ready for sync. Compatible with Windows PowerShell 5.1+ and PowerShell Core 7+.
 .PARAMETER Force
-    Force sync even if recently synced
+    Reserved for future use (currently unused)
 .PARAMETER Quiet
     Run silently without output
 .EXAMPLE
@@ -23,8 +23,6 @@ param(
 # Configuration
 $RulesDir = Join-Path $env:HOME "Lab_Data/Warp-AI-Rules"
 $RulesFile = Join-Path $RulesDir "agent-rules.md"
-$LastSyncFile = Join-Path $RulesDir ".last-sync"
-$SyncThrottleHours = 1
 
 function Write-Message {
     param([string]$Message, [string]$Color = "White")
@@ -59,6 +57,23 @@ function Test-GitClean {
     }
 }
 
+function Test-FileClean {
+    param([string]$FilePath)
+    try {
+        $originalLocation = Get-Location
+        Set-Location (Split-Path $FilePath -Parent)
+        $fileName = Split-Path $FilePath -Leaf
+        $status = git status --porcelain $fileName 2>$null
+        return [string]::IsNullOrEmpty($status)
+    }
+    catch {
+        return $true  # If git fails, assume file is clean
+    }
+    finally {
+        Set-Location $originalLocation
+    }
+}
+
 # Main sync function
 try {
     # Check if rules directory exists
@@ -67,56 +82,42 @@ try {
         exit 1
     }
 
-    # Get current timestamp
-    $CurrentTime = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
-    $LastSyncTime = 0
-
-    # Read last sync time
-    if (Test-Path $LastSyncFile) {
-        try {
-            $LastSyncTime = [long](Get-Content $LastSyncFile -Raw).Trim()
-        }
-        catch {
-            Write-Message "⚠️  Invalid sync timestamp, treating as first run" "Yellow"
-        }
-    }
-
-    # Check if sync is needed (throttle: only sync if more than X hours passed or forced)
-    $TimeDiff = $CurrentTime - $LastSyncTime
-    $ThrottleSeconds = $SyncThrottleHours * 3600
-    
-    if ($TimeDiff -lt $ThrottleSeconds -and -not $Force) {
-        $MinutesRemaining = [math]::Ceiling(($ThrottleSeconds - $TimeDiff) / 60)
-        Write-Message "⏱️  Last sync was recent. Next sync available in $MinutesRemaining minutes." "Cyan"
-        Write-Message "   Use -Force to sync anyway." "Gray"
-        exit 0
-    }
-
-    Write-Message "📝 Initiating Warp AI rules sync..." "Green"
-
-    # Check if we're in a git repository
-    if (-not (Test-GitRepository $RulesDir)) {
-        Write-Message "⚠️  Not a git repository. Git operations skipped." "Yellow"
-    }
-    elseif (-not (Test-GitClean $RulesDir)) {
-        Write-Message "⚠️  Uncommitted changes found. Please commit or stash first." "Yellow"
-        Write-Message "   Run: cd '$RulesDir' && git status" "Gray"
+    # Check if rules file exists
+    if (-not (Test-Path $RulesFile)) {
+        Write-Message "❌ Rules file not found: $RulesFile" "Red"
         exit 1
     }
 
-    # Save sync timestamp
-    $CurrentTime | Out-File -FilePath $LastSyncFile -Encoding ASCII -NoNewline
+    Write-Message "📝 Initiating Warp AI rules sync..." "Green"
+    
+    # Check if rules file has uncommitted changes
+    $IsGitRepo = Test-GitRepository $RulesDir
+    $RulesFileClean = $true
+    $CanCommit = $false
+    
+    if ($IsGitRepo) {
+        $RulesFileClean = Test-FileClean $RulesFile
+        $CanCommit = Test-GitClean $RulesDir
+        
+        if (-not $RulesFileClean) {
+            Write-Message "⚠️  Rules file (agent-rules.md) has uncommitted changes!" "Yellow"
+            Write-Message "   This could interfere with sync. Consider committing first." "Gray"
+            exit 1
+        }
+    }
 
-    Write-Message "✅ Sync timestamp updated successfully!" "Green"
+    Write-Message "✅ Ready to sync rules documentation!" "Green"
     Write-Message "" 
     Write-Message "📋 Next steps:" "Cyan"
     Write-Message "   1. Tell Warp Agent: 'Update agent-rules.md with current rules'" "White"
-    Write-Message "   2. Or manually update the rules documentation" "Gray"
-    Write-Message ""
-    Write-Message "📊 Stats:" "Cyan"
-    Write-Message "   • Rules directory: $(Split-Path $RulesDir -Leaf)" "Gray"
-    Write-Message "   • Last sync: $(Get-Date -UnixTimeSeconds $LastSyncTime -Format 'yyyy-MM-dd HH:mm:ss')" "Gray"
-    Write-Message "   • Throttle period: $SyncThrottleHours hours" "Gray"
+    Write-Message "   2. Agent will update the file and commit automatically" "Gray"
+    
+    if ($IsGitRepo) {
+        Write-Message ""
+        Write-Message "📊 Git Status:" "Cyan"
+        Write-Message "   • Rules file: $(if ($RulesFileClean) { 'Clean ✅' } else { 'Modified ⚠️' })" "Gray"
+        Write-Message "   • Repository: $(if ($CanCommit) { 'Clean - can commit ✅' } else { 'Has changes - will skip commit/push ⚠️' })" "Gray"
+    }
 
     exit 0
 }
