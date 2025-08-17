@@ -23,6 +23,8 @@
     - New-DirectoryIfNotExists: for directory creation
     - Merge-JsonObjects: for merging multiple JSON objects with array deduplication
     - Get-GitSubmodulePaths: for getting git submodule directories
+    - Get-FilesArray: for listing files in a directory (recursive or not)
+    - Resolve-FileNameConflicts: for resolving file name conflicts with suffixes (_2, _3, etc.)
 #>
 
 # Write message with color support (cross-platform PowerShell compatibility)
@@ -527,4 +529,67 @@ function New-DirectoryIfNotExists {
         Write-Warning "Error creating directory $Path : $($_.Exception.Message)"
         return $false
     }
+}
+
+# Get array of files in a directory (optionally recursive)
+function Get-FilesArray {
+    <#
+    .SYNOPSIS
+        Returns an array of file paths from a directory.
+    .DESCRIPTION
+        Lists all files in the specified directory. Optionally searches recursively.
+    .PARAMETER Path
+        The directory to search.
+    .PARAMETER Recursive
+        Whether to search recursively (default: $false).
+    .EXAMPLE
+        Get-FilesArray -Path "C:\MyRepo" -Recursive $true
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path,
+        [Parameter(Mandatory = $false)]
+        [bool]$Recursive = $false
+    )
+    if ($Recursive) {
+        return Get-ChildItem -Path $Path -File -Recurse | Select-Object -ExpandProperty FullName
+    } else {
+        return Get-ChildItem -Path $Path -File | Select-Object -ExpandProperty FullName
+    }
+}
+
+# Resolve file name conflicts in an array (no git dependency)
+function Resolve-FileNameConflicts {
+    <#
+    .SYNOPSIS
+        Resolves file name conflicts by applying suffixes.
+    .DESCRIPTION
+        Given a list of file names, returns a mapping of original to resolved names, applying _2, _3, etc. for conflicts.
+    .PARAMETER FileNames
+        Array of file names to resolve.
+    .EXAMPLE
+        Resolve-FileNameConflicts -FileNames @("file.txt", "file.txt", "file.txt")
+        # Returns: @{ "file.txt" = "file.txt"; "file.txt" = "file_2.txt"; "file.txt" = "file_3.txt" }
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string[]]$FileNames
+    )
+    $nameCounts = @{}
+    $resolvedNames = @{}
+    foreach ($name in $FileNames) {
+        if ($nameCounts.ContainsKey($name)) {
+            $nameCounts[$name] += 1
+            $base = [System.IO.Path]::GetFileNameWithoutExtension($name)
+            $ext = [System.IO.Path]::GetExtension($name)
+            $newName = "${base}_$($nameCounts[$name])$ext"
+            $resolvedNames[$name] = $newName
+        } else {
+            $nameCounts[$name] = 1
+            $resolvedNames[$name] = $name
+        }
+    }
+    return $resolvedNames
 }
