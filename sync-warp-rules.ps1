@@ -20,75 +20,29 @@ param(
     [switch]$Quiet
 )
 
+# Import common utilities via dot-sourcing (DRY principle)
+$scriptDirectory = Split-Path -Parent $PSCommandPath
+. (Join-Path $scriptDirectory "Common-Utils.ps1")
+
 # Configuration
 $RulesDir = Join-Path $env:HOME "Lab_Data/Warp-AI-Rules"
 $RulesFile = Join-Path $RulesDir "agent-rules.md"
-
-function Write-Message {
-    param([string]$Message, [string]$Color = "White")
-    if (-not $Quiet) {
-        if ($PSVersionTable.PSVersion.Major -ge 6) {
-            Write-Host $Message -ForegroundColor $Color
-        } else {
-            # Windows PowerShell compatibility
-            Write-Host $Message
-        }
-    }
-}
-
-function Test-GitRepository {
-    param([string]$Path)
-    return Test-Path (Join-Path $Path ".git")
-}
-
-function Test-GitClean {
-    param([string]$Path)
-    try {
-        $originalLocation = Get-Location
-        Set-Location $Path
-        $status = git status --porcelain 2>$null
-        return [string]::IsNullOrEmpty($status)
-    }
-    catch {
-        return $false
-    }
-    finally {
-        Set-Location $originalLocation
-    }
-}
-
-function Test-FileClean {
-    param([string]$FilePath)
-    try {
-        $originalLocation = Get-Location
-        Set-Location (Split-Path $FilePath -Parent)
-        $fileName = Split-Path $FilePath -Leaf
-        $status = git status --porcelain $fileName 2>$null
-        return [string]::IsNullOrEmpty($status)
-    }
-    catch {
-        return $true  # If git fails, assume file is clean
-    }
-    finally {
-        Set-Location $originalLocation
-    }
-}
 
 # Main sync function
 try {
     # Check if rules directory exists
     if (-not (Test-Path $RulesDir)) {
-        Write-Message "❌ Rules directory not found: $RulesDir" "Red"
+        Write-Message "❌ Rules directory not found: $RulesDir" "Red" -Quiet:$Quiet
         exit 1
     }
 
     # Check if rules file exists
     if (-not (Test-Path $RulesFile)) {
-        Write-Message "❌ Rules file not found: $RulesFile" "Red"
+        Write-Message "❌ Rules file not found: $RulesFile" "Red" -Quiet:$Quiet
         exit 1
     }
 
-    Write-Message "📝 Initiating Warp AI rules sync..." "Green"
+    Write-Message "📝 Initiating Warp AI rules sync..." "Green" -Quiet:$Quiet
     
     # Check if rules file has uncommitted changes
     $IsGitRepo = Test-GitRepository $RulesDir
@@ -100,28 +54,26 @@ try {
         $CanCommit = Test-GitClean $RulesDir
         
         if (-not $RulesFileClean) {
-            Write-Message "⚠️  Rules file (agent-rules.md) has uncommitted changes!" "Yellow"
-            Write-Message "   This could interfere with sync. Consider committing first." "Gray"
+            Write-Message "⚠️  Rules file (agent-rules.md) has uncommitted changes!" "Yellow" -Quiet:$Quiet
+            Write-Message "   This could interfere with sync. Consider committing first." "Gray" -Quiet:$Quiet
             exit 1
         }
     }
 
-    Write-Message "✅ Ready to sync rules documentation!" "Green"
-    Write-Message "" 
-    Write-Message "📋 Next steps:" "Cyan"
-    Write-Message "   1. Tell Warp Agent: 'Update agent-rules.md with current rules'" "White"
-    Write-Message "   2. Agent will update the file and commit automatically" "Gray"
+    Write-Message "✅ Ready to sync rules documentation!" "Green" -Quiet:$Quiet
+    Write-Message "📋 Next steps:" "Cyan" -Quiet:$Quiet
+    Write-Message "   1. Tell Warp Agent: 'Update agent-rules.md with current rules'" "White" -Quiet:$Quiet
+    Write-Message "   2. Agent will update the file and commit automatically" "Gray" -Quiet:$Quiet
     
     if ($IsGitRepo) {
-        Write-Message ""
-        Write-Message "📊 Git Status:" "Cyan"
-        Write-Message "   • Rules file: $(if ($RulesFileClean) { 'Clean ✅' } else { 'Modified ⚠️' })" "Gray"
-        Write-Message "   • Repository: $(if ($CanCommit) { 'Clean - can commit ✅' } else { 'Has changes - will skip commit/push ⚠️' })" "Gray"
+        Write-Message "📊 Git Status:" "Cyan" -Quiet:$Quiet
+        Write-Message "   • Rules file: $(if ($RulesFileClean) { 'Clean ✅' } else { 'Modified ⚠️' })" "Gray" -Quiet:$Quiet
+        Write-Message "   • Repository: $(if ($CanCommit) { 'Clean - can commit ✅' } else { 'Has changes - will skip commit/push ⚠️' })" "Gray" -Quiet:$Quiet
     }
 
     exit 0
 }
 catch {
-    Write-Message "❌ Sync failed: $($_.Exception.Message)" "Red"
+    Write-Message "❌ Sync failed: $($_.Exception.Message)" "Red" -Quiet:$Quiet
     exit 1
 }
