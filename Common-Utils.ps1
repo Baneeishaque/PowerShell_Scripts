@@ -22,6 +22,7 @@
     - Write-JsonFile: for JSON file writing with proper formatting
     - New-DirectoryIfNotExists: for directory creation
     - Merge-JsonObjects: for merging multiple JSON objects with array deduplication
+    - Get-GitSubmodulePaths: for getting git submodule directories
 #>
 
 # Write message with color support (cross-platform PowerShell compatibility)
@@ -328,6 +329,71 @@ function Write-JsonFile {
         Write-Warning "Error writing JSON file $FilePath : $($_.Exception.Message)"
         return $false
     }
+}
+
+# Get git submodule paths from a git repository
+function Get-GitSubmodulePaths {
+    <#
+    .SYNOPSIS
+        Gets the paths of all git submodules in a repository.
+    
+    .DESCRIPTION
+        Checks if a git repository has submodules and returns their paths.
+        Returns an empty array if no submodules are found or if git operations fail.
+    
+    .PARAMETER RepositoryPath
+        The path to the git repository to check for submodules.
+    
+    .EXAMPLE
+        Get-GitSubmodulePaths "/Users/dk/Lab_Data/MyRepo"
+    #>
+    [CmdletBinding()]
+    [OutputType([string[]])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$RepositoryPath
+    )
+    
+    $submodulePaths = @()
+    
+    try {
+        $originalLocation = Get-Location
+        Set-Location $RepositoryPath
+        
+        # Check if .gitmodules file exists
+        $gitmodulesPath = Join-Path $RepositoryPath ".gitmodules"
+        if (!(Test-Path -Path $gitmodulesPath -PathType Leaf)) {
+            return $submodulePaths
+        }
+        
+        # Get submodule paths using git command
+        $gitOutput = git submodule status 2>$null
+        if ($LASTEXITCODE -eq 0 -and ![string]::IsNullOrEmpty($gitOutput)) {
+            $lines = $gitOutput -split "`n" | Where-Object { ![string]::IsNullOrWhiteSpace($_) }
+            
+            foreach ($line in $lines) {
+                # Git submodule status format: " hash path (description)"
+                # Extract the path (second field after splitting by spaces)
+                $parts = $line.Trim() -split '\s+'
+                if ($parts.Count -ge 2) {
+                    $submodulePath = $parts[1]
+                    $fullSubmodulePath = Join-Path $RepositoryPath $submodulePath
+                    
+                    if (Test-Path -Path $fullSubmodulePath -PathType Container) {
+                        $submodulePaths += $fullSubmodulePath
+                    }
+                }
+            }
+        }
+    }
+    catch {
+        Write-Warning "Error getting git submodules from $RepositoryPath : $($_.Exception.Message)"
+    }
+    finally {
+        Set-Location $originalLocation
+    }
+    
+    return $submodulePaths
 }
 
 # Merge multiple JSON objects with smart handling of arrays and objects

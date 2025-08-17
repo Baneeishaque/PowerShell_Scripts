@@ -6,7 +6,8 @@
     This script traverses only first-level folders in the parent directory, checks if each folder 
     contains a .vscode/extensions.json file, reads and parses all found JSON files, concatenates 
     all extensions while removing duplicates, and creates a new consolidated extensions.json file 
-    in the current folder's .vscode directory.
+    in the current folder's .vscode directory. If a first-level folder is a git repository with 
+    submodules, it will also check each submodule for .vscode/extensions.json files.
 
 .PARAMETER SourcePath
     The path to search for first-level directories. Defaults to parent of current directory.
@@ -47,13 +48,52 @@ try {
     Write-Message "=== VS Code Extensions Consolidator ===" "Magenta"
     Write-Message "Source Path: $SourcePath" "Gray"
     Write-Message "Output Path: $OutputPath" "Gray"
-    Write-Message ""
+    Write-Message " " "White"
     
-    # Find all extensions.json files using utility function
+    # Find all extensions.json files using utility function with submodule support
     Write-Message "Searching for .vscode/extensions.json files in first-level directories..." "Cyan"
     Write-Message "Search path: $SourcePath" "Gray"
     
-    $extensionsFiles = Find-FilesInFirstLevelDirectories -SearchPath $SourcePath -RelativeFilePath ".vscode/extensions.json"
+    $extensionsFiles = @()
+    
+    # Get first-level directories
+    if (!(Test-Path -Path $SourcePath -PathType Container)) {
+        Write-Message "Source path does not exist: $SourcePath" "Red"
+        exit 1
+    }
+    
+    $firstLevelDirs = Get-ChildItem -Path $SourcePath -Directory | Where-Object { !$_.Name.StartsWith('.') }
+    
+    foreach ($dir in $firstLevelDirs) {
+        Write-Message "Processing directory: $($dir.Name)" "Gray"
+        
+        # Check for extensions.json in the main directory
+        $extensionsJsonPath = Join-Path -Path $dir.FullName -ChildPath ".vscode/extensions.json"
+        if (Test-Path -Path $extensionsJsonPath -PathType Leaf) {
+            $extensionsFiles += $extensionsJsonPath
+        }
+        
+        # If it's a git repository, check for submodules
+        if (Test-GitRepository -Path $dir.FullName) {
+            Write-Message "  → Git repository detected, checking for submodules..." "Gray"
+            
+            $submodulePaths = Get-GitSubmodulePaths -RepositoryPath $dir.FullName
+            
+            if ($submodulePaths.Count -gt 0) {
+                Write-Message "  → Found $($submodulePaths.Count) submodule(s)" "Gray"
+                
+                foreach ($submodulePath in $submodulePaths) {
+                    $submoduleName = Split-Path -Leaf $submodulePath
+                    Write-Message "    → Checking submodule: $submoduleName" "Gray"
+                    
+                    $submoduleExtensionsJson = Join-Path -Path $submodulePath -ChildPath ".vscode/extensions.json"
+                    if (Test-Path -Path $submoduleExtensionsJson -PathType Leaf) {
+                        $extensionsFiles += $submoduleExtensionsJson
+                    }
+                }
+            }
+        }
+    }
     
     # Display found files
     foreach ($file in $extensionsFiles) {
