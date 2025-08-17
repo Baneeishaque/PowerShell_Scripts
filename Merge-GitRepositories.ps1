@@ -8,15 +8,20 @@
     Path to the new, unified git repository. If not provided, a new repo is created in the current directory.
 .PARAMETER SourceRepoPaths
     Array of paths to source repositories to merge.
+.PARAMETER SkipVerification
+    If true, skips the post-merge verification step. Default: $false.
 .EXAMPLE
     ./Merge-GitRepositories.ps1 -SourceRepoPaths "/repo1", "/repo2"
+    ./Merge-GitRepositories.ps1 -SourceRepoPaths "/repo1", "/repo2" -SkipVerification $true
 #>
 
 param (
     [Parameter(Mandatory=$false)]
     [string]$TargetRepoPath,
     [Parameter(Mandatory)]
-    [string[]]$SourceRepoPaths
+    [string[]]$SourceRepoPaths,
+    [Parameter(Mandatory=$false)]
+    [bool]$SkipVerification = $false
 )
 
 # Pre-check for Common-Utils.ps1
@@ -120,3 +125,24 @@ for ($i = 1; $i -lt $SourceRepoPaths.Count; $i++) {
 Remove-Item -Recurse -Force $bareRepoPath
 
 Write-Message "Merge complete. All source repos have been merged into $TargetRepoPath."
+
+# Verification step: compare merged repo with source repos
+if (-not $SkipVerification) {
+    $compareScript = Join-Path $PSScriptRoot "Compare-GitRepositories.ps1"
+    if (Test-Path $compareScript) {
+        Write-Message "Starting verification: comparing merged repo to source repos..."
+        . $compareScript
+        Compare-GitRepositories `
+            -TargetRepoPath $TargetRepoPath `
+            -ReferenceRepoPaths $SourceRepoPaths `
+            -CompareByMessage $true `
+            -CompareByTime $true `
+            -CompareByAuthor $true `
+            -CompareByContent $true
+        Write-Message "Verification complete. See above for any missing commits."
+    } else {
+        Write-Message "Verification script Compare-GitRepositories.ps1 not found. Skipping verification."
+    }
+} else {
+    Write-Message "Verification skipped as per user request."
+}
