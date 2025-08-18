@@ -42,7 +42,7 @@
     "continue.continue",
     "dart-code.dart-code",
     "dart-code.flutter",
-    "davidAnson.vscode-markdownlint",
+    "davidanson.vscode-markdownlint",
     "donjayamanne.githistory",
     "eamodio.gitlens",
     "everlastengineering.debug-in-titlebar",
@@ -54,7 +54,7 @@
     "github.vscode-github-actions",
     "github.vscode-pull-request-github",
     "gocodeo.gocodeo",
-    "Google.geminicodeassist",
+    "google.geminicodeassist",
     "hashhar.gitattributes",
     "hediet.debug-visualizer",
     "huizhou.githd",
@@ -99,11 +99,11 @@
     "solomonkinard.git-files",
     "streetsidesoftware.code-spell-checker",
     "sysoev.vscode-open-in-github",
-    "TaichiKubo.dired-plus",
+    "taichikubo.dired-plus",
     "takkao.open-window-tab-context",
     "tamasfe.even-better-toml",
     "timonwong.shellcheck",
-    "tylerLeonhardt.vscode-inline-values-powershell",
+    "tylerleonhardt.vscode-inline-values-powershell",
     "usernamehw.errorlens",
     "vscode.configuration-editing",
     "vscode.dart",
@@ -134,7 +134,7 @@
     "yzane.markdown-pdf",
     "yzhang.markdown-all-in-one",
     "zaaack.markdown-editor",
-    "zainChen.json"
+    "zainchen.json"
   ],
   "recommendationsFromGitHub": [
     "cplussharp.vscode-cert-view"
