@@ -1,16 +1,9 @@
 {
   "additionalRecommendations": [
-    "actionforge.actionforge",
-    "alphaxek.github-actions-locally",
     "continue.continue",
-    "foxundermoon.shell-format",
     "gocodeo.gocodeo",
     "google.geminicodeassist",
-    "jwevans.jwe-markdown-enhanced",
     "kodu-ai.claude-dev-experimental",
-    "mushan.vscode-paste-image",
-    "nur-srijan.markdown-rich-preview",
-    "shd101wyy.markdown-preview-enhanced",
     "sindujaramaraj.app-developer-copilot",
     "sixth.sixth-ai",
     "taichikubo.dired-plus"
