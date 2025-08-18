@@ -10,6 +10,7 @@
     "vscode.configuration-editing",
     "vscode.git",
     "vscode.git-base",
+    "vscode.github",
     "vscode.json",
     "vscode.json-language-features",
     "vscode.merge-conflict",
