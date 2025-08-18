@@ -1,10 +1,8 @@
 {
   "recommendations": [
     "eamodio.gitlens",
-    "fittentech.fitten-code",
     "github.vscode-pull-request-github",
     "ms-vscode.powershell",
-    "nick-rudenko.back-n-forth",
     "pkief.material-icon-theme",
     "semanticdiff.semanticdiff",
     "sleistner.vscode-fileutils",
