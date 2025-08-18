@@ -289,22 +289,77 @@ function Read-JsonFile {
     }
 }
 
-# Write JSON file with proper formatting
+# Recursively remove duplicates from arrays in a PSCustomObject or hashtable
+function Remove-DuplicatesFromArrays {
+    <#
+    .SYNOPSIS
+        Recursively removes duplicate items from arrays in an object.
+    .DESCRIPTION
+        Walks through all properties of an object, and for any array, removes duplicate items.
+        Handles arrays of primitives and arrays of objects (by JSON string comparison).
+        Recurses into nested objects and arrays.
+    .PARAMETER InputObject
+        The object to process.
+    .EXAMPLE
+        $deduped = Remove-DuplicatesFromArrays $object
+    #>
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$InputObject
+    )
+    if ($null -eq $InputObject) { return $InputObject }
+
+    if ($InputObject -is [System.Collections.IEnumerable] -and
+        $InputObject.GetType().Name -ne 'String') {
+        # It's an array (but not a string)
+        $unique = @()
+        $seen = @{}
+        foreach ($item in $InputObject) {
+            # For objects, use JSON string as key; for primitives, use value
+            if ($item -is [PSCustomObject] -or $item -is [Hashtable]) {
+                $key = $item | ConvertTo-Json -Compress
+            } else {
+                $key = $item
+            }
+            if (-not $seen.ContainsKey($key)) {
+                $unique += ,$item
+                $seen[$key] = $true
+            }
+        }
+        # Recursively deduplicate items in the array
+        return $unique | ForEach-Object { Remove-DuplicatesFromArrays $_ }
+    } elseif ($InputObject -is [PSCustomObject] -or $InputObject -is [Hashtable]) {
+        # It's an object
+        $output = @{}
+        foreach ($prop in $InputObject.PSObject.Properties) {
+            $output[$prop.Name] = Remove-DuplicatesFromArrays $prop.Value
+        }
+        return [PSCustomObject]$output
+    } else {
+        # Primitive value
+        return $InputObject
+    }
+}
+
+# Write JSON file with proper formatting and optional deduplication
 function Write-JsonFile {
     <#
     .SYNOPSIS
         Writes an object to a JSON file with proper formatting.
     .DESCRIPTION
         Common pattern for writing JSON files with consistent formatting and error handling.
-    
+        Optionally removes duplicate items from arrays before writing.
     .PARAMETER Object
         The object to convert to JSON.
     .PARAMETER FilePath
         The path where the JSON file should be written.
     .PARAMETER Compress
         Whether to compress the JSON output (default: $false).
+    .PARAMETER SkipDeduplication
+        If set, skips deduplication of arrays before writing.
     .EXAMPLE
         Write-JsonFile -Object $data -FilePath "output.json"
+        Write-JsonFile -Object $data -FilePath "output.json" -SkipDeduplication $true
     #>
     [CmdletBinding()]
     param(
@@ -315,11 +370,15 @@ function Write-JsonFile {
         [string]$FilePath,
 
         [Parameter(Mandatory = $false)]
-        [bool]$Compress = $false
+        [bool]$Compress = $false,
+
+        [Parameter(Mandatory = $false)]
+        [bool]$SkipDeduplication = $false
     )
 
     try {
-        $jsonContent = $Object | ConvertTo-Json -Depth 10 -Compress:$Compress
+        $objectToWrite = if ($SkipDeduplication) { $Object } else { Remove-DuplicatesFromArrays $Object }
+        $jsonContent = $objectToWrite | ConvertTo-Json -Depth 10 -Compress:$Compress
         $jsonContent | Out-File -FilePath $FilePath -Encoding UTF8 -Force
         return $true
     }
@@ -398,21 +457,16 @@ function Get-GitSubmodulePaths {
 function Merge-JsonObjects {
     <#
     .SYNOPSIS
-        Merges multiple JSON objects into a single consolidated object.
+        Robustly merges multiple JSON objects with strict type and array item type validation.
 
     .DESCRIPTION
-        Takes multiple JSON objects and merges them using these rules:
-        - For object values: overwrites (last object wins)
-        - For array values: appends all items and removes duplicates
-        - Handles nested objects and maintains proper structure
+        - For each unique property, ensures all values are of the same type.
+        - For arrays, ensures all arrays have the same item type, and deduplicates by value.
+        - For primitives/objects, always overwrites with the latest value.
+        - Exits with a clear error if any type or array item type mismatch is found.
 
     .PARAMETER JsonObjects
         Array of PSCustomObjects to merge (from ConvertFrom-Json).
-
-    .EXAMPLE
-        $json1 = '{"recommendations": ["ext1", "ext2"], "config": {"setting1": "value1"}}' | ConvertFrom-Json
-        $json2 = '{"recommendations": ["ext2", "ext3"], "config": {"setting2": "value2"}}' | ConvertFrom-Json
-        Merge-JsonObjects -JsonObjects @($json1, $json2)
     #>
     [CmdletBinding()]
     param(
@@ -420,76 +474,121 @@ function Merge-JsonObjects {
         [PSCustomObject[]]$JsonObjects
     )
 
-    if ($JsonObjects.Count -eq 0) {
-        return [PSCustomObject]@{}
-    }
+    if ($JsonObjects.Count -eq 0) { return [PSCustomObject]@{} }
+    if ($JsonObjects.Count -eq 1) { return $JsonObjects[0] }
 
-    if ($JsonObjects.Count -eq 1) {
-        return $JsonObjects[0]
-    }
-
-    # Start with the first object as base
-    $result = [PSCustomObject]@{}
-
-    # Get all unique property names across all objects
+    $result = [ordered]@{}
     $allProperties = @()
     foreach ($obj in $JsonObjects) {
         if ($null -ne $obj -and $obj.PSObject.Properties.Count -gt 0) {
             $allProperties += $obj.PSObject.Properties.Name
         }
     }
+    # Write-Message "Found $($allProperties.Count) properties across all JSON objects" "Gray"
+    # foreach ($property in $allProperties) {
+    #     Write-Message "Found Property: $($property | ConvertTo-Json -Depth 3)" "Gray"
+    # }
+    # exit 0
+
     $uniqueProperties = $allProperties | Sort-Object -Unique
+    # Write-Message "Found $($uniqueProperties.Count) unique properties across all JSON objects" "Gray"
+    # foreach ($property in $uniqueProperties) {
+    #     Write-Message "Found unique property: $property" "Gray"
+    # }
+    # exit 0
 
-    # Process each property
     foreach ($property in $uniqueProperties) {
-        $propertyValues = @()
-        $arrayValues = @()
-        $lastObjectValue = $null
-
-        # Collect values for this property from all objects
+        # Write-Message "Processing property: $property" "Gray"
+        $values = @()
         foreach ($obj in $JsonObjects) {
             if ($null -ne $obj -and $obj.PSObject.Properties.Name -contains $property) {
-                $value = $obj.$property
+                $values += ,$obj.$property
+            }
+        }
+        # Write-Message "Found $($values.Count) values for property '$property'" "Gray"
+        # Write-Message "Found values: $($values | ConvertTo-Json -Depth 3)" "Gray"
+        # exit 0
 
-                if ($null -ne $value) {
-                    $propertyValues += $value
-                    $lastObjectValue = $value
+        if ($values.Count -eq 0) { continue }
 
-                    # If it's an array, collect all items
-                    if ($value -is [Array] -or $value.GetType().Name -eq 'Object[]') {
-                        $arrayValues += $value
+        # Determine type
+        $types = @($values | ForEach-Object { if ($_ -eq $null) { "null" } else { $_.GetType().Name } } | Sort-Object -Unique)
+        # Write-Message "Found types for property '$property': $types" "Gray"
+        # Write-Message "Types: $($types -join ', ')" "Gray"
+        # Write-Message "Types Data Type: $($types.GetType().Name)" "Gray"
+        # exit 0
+        # Write-Message "Types Count: $($types.Count)" "Gray"
+        if ($types.Count -gt 1) {
+            Write-Error "Type mismatch for property '$property': found types $($types -join ', ')"
+            exit 1
+        }
+        $type = $types[0]
+        # Write-Message "Using type '$type' for property '$property'" "Gray"
+        # exit 0
+
+        if ($type -eq "Object[]" -or $type -eq "Array") {
+            # Validate all arrays have the same item type
+            $allItems = @()
+            $itemTypes = @()
+            foreach ($arr in $values) {
+                # Write-Message "Processing value for property '$property': $($arr | ConvertTo-Json -Depth 3)" "Gray"
+                if ($arr -eq $null) { continue }
+                foreach ($item in $arr) {
+                    # Write-Message "Found item: $($item | ConvertTo-Json -Depth 3)" "Gray"
+                    $allItems += ,$item
+                    # Write-Message "Found all items: $($allItems | ConvertTo-Json -Depth 3)" "Gray"
+                    $typeName = if ($item -eq $null) { "null" } else { $item.GetType().Name }
+                    $itemTypes += ,$typeName
+                }
+            }
+            $itemTypes = @($itemTypes | Sort-Object -Unique)
+            # Write-Message "Array item types: $($itemTypes -join ', ')" "Gray"
+            # Write-Message "Array item types data type: $($itemTypes.GetType().Name)" "Gray"
+            # Write-Message "Array item types count: $($itemTypes.Count)" "Gray"
+            if ($itemTypes.Count -gt 1) {
+                Write-Error "Array item type mismatch for property '$property': found item types $($itemTypes -join ', ')"
+                exit 1
+            }
+            $itemType = $itemTypes[0]
+            # Write-Message "Using item type '$itemType' for property '$property'" "Gray"
+            # exit 0
+            # Deduplicate by value
+            if ($itemType -eq "String" -or $itemType -eq "Int32" -or $itemType -eq "Double" -or $itemType -eq "Boolean") {
+                $uniqueItems = $allItems | Sort-Object -Unique
+                $result[$property] = @($uniqueItems)
+            } else {
+                # For objects, deduplicate by JSON string
+                $seen = @{}
+                $uniqueItems = @()
+                foreach ($item in $allItems) {
+                    $key = if ($item -is [PSCustomObject] -or $item -is [Hashtable]) {
+                        $item | ConvertTo-Json -Compress
+                    } else {
+                        $item
+                    }
+                    if (-not $seen.ContainsKey($key)) {
+                        $uniqueItems += ,$item
+                        $seen[$key] = $true
                     }
                 }
+                $result[$property] = @($uniqueItems)
             }
+        } elseif ($type -eq "String" -or $type -eq "Int32" -or $type -eq "Double" -or $type -eq "Boolean" -or $type -eq "Hashtable" -or $type -eq "PSCustomObject") {
+            # Use the last value
+            $result[$property] = $values[-1]
+        } elseif ($type -eq "null") {
+            $result[$property] = $null
+        } else {
+            Write-Error "Unsupported type '$type' for property '$property'"
+            exit 1
         }
-
-        if ($propertyValues.Count -gt 0) {
-            # Determine how to handle this property
-            $firstValue = $propertyValues[0]
-
-            if ($firstValue -is [Array] -or $firstValue.GetType().Name -eq 'Object[]') {
-                # It's an array - concatenate and remove duplicates
-                $allArrayItems = @()
-                foreach ($arrayValue in $arrayValues) {
-                    $allArrayItems += $arrayValue
-                }
-
-                # Remove duplicates and sort for consistency
-                $uniqueItems = $allArrayItems | Sort-Object -Unique
-                $result | Add-Member -MemberType NoteProperty -Name $property -Value @($uniqueItems)
-            }
-            elseif ($firstValue.GetType().Name -eq 'PSCustomObject') {
-                # It's an object - use the last one (overwrite behavior)
-                $result | Add-Member -MemberType NoteProperty -Name $property -Value $lastObjectValue
-            }
-            else {
-                # It's a primitive value - use the last one (overwrite behavior)
-                $result | Add-Member -MemberType NoteProperty -Name $property -Value $lastObjectValue
-            }
-        }
+        # Write-Message "Final merged property '$property': $($result[$property] | ConvertTo-Json -Depth 3)" "Gray"
+        # exit 0
     }
+    # Write-Message "Final merged JSON object: $($result | ConvertTo-Json -Depth 3)" "Gray"
+    # exit 0
 
-    return $result
+    return [PSCustomObject]$result
 }
 
 # Create directory if it doesn't exist
