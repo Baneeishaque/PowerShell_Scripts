@@ -15,19 +15,15 @@
     "vscode.github-authentication"
   ],
   "onlyDesktopSupported": [
-    "quentinguidee.gitignore-ultimate",
-    "tomoki1207.pdf"
+    "quentinguidee.gitignore-ultimate"
   ],
   "onlyGitpodSupported": [
     "lang2hong.githd",
     "solomonkinard.git-files"
   ],
   "onlyVscodeSupported": [
-    "continue.continue",
     "github.copilot",
-    "github.copilot-chat",
-    "medo64.render-crlf",
-    "ms-vscode-remote.remote-containers"
+    "github.copilot-chat"
   ],
   "recommendations": [
     "aaron-bond.better-comments",
