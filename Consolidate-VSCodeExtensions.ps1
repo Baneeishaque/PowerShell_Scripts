@@ -134,6 +134,7 @@ try {
     Write-Message "Consolidation complete." "Green"
     # Write-Message "Final merged JSON object: $($consolidated | ConvertTo-Json -Depth 3)" "Gray"
     # exit 0
+    # TODO: Remove duplicate extensions in multiple categories based on priority
 
     # Create output file
     $vscodeDir = Join-Path -Path $OutputPath -ChildPath ".vscode"
