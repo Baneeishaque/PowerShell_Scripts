@@ -1,3 +1,5 @@
+#!pwsh-preview
+
 [CmdletBinding()]
 param (
     [Parameter(Mandatory=$false, Position=0)]
