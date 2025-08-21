@@ -90,10 +90,15 @@ scoopReinstallHelper.ps1
 scoop_pacakges.txt
 /Scoop Manifests
 /Scoop_Scripts/Scoop App Manifest Generation Scripts/Visual Studio Scoop App Manifest Generation Scripts/Scoop Manifests
+
 /Android 7 DIGI KGB Hajara Banee Gmail 1-2-3 MEmu Packages *.csv
 /Android 7 DIGI KGB Ismail MEmu Packages *.csv
 /Android 11 BlueStacks App Player Packages *.csv
+
 /PowerShell_Modules_Scripts/*_PowerShellModules.json
+
 /Android 11 Banee Gmail BlueStacks App Player Packages *.csv
 /Android 9 Banee Gmail 1-2 MEmu Packages *.csv
 /Android 9 MEmu Bing Packages *.csv
+
+/downloaded-image.jpg
