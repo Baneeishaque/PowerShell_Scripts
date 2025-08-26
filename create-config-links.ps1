@@ -136,6 +136,14 @@ foreach ($exampleFile in $exampleFiles) {
 
                 # Create symbolic link using cross-platform PowerShell method
                 try {
+                    # Replace symbolic link creation block with:
+                    if ($env:ACT -eq "true") {
+                        Copy-Item -Path $configFilePath -Destination $actualFilePath -Force
+                        Write-Host "📎 ACT fallback: Copied file instead of symbolic link: $actualFileName ← $configFilePath" -ForegroundColor Yellow
+                    } else {
+                        New-Item -ItemType SymbolicLink -Path $actualFilePath -Target $configFilePath -Force -ErrorAction Stop | Out-Null
+                        Write-Host "✅ Created symbolic link: $actualFileName → $configFilePath" -ForegroundColor Green
+                    }
                     New-Item -ItemType SymbolicLink -Path $actualFilePath -Target $configFilePath -Force -ErrorAction Stop | Out-Null
                     Write-Host "✅ Created symbolic link: $actualFileName → $configFilePath" -ForegroundColor Green
                 }
