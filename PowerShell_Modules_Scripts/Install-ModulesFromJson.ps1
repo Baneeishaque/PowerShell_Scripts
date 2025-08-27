@@ -1,3 +1,4 @@
+#!pwsh
 function Install-ModulesFromJson {
     param(
         [string]$fileName

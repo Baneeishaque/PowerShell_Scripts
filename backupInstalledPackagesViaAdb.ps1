@@ -1,3 +1,4 @@
+#!pwsh
 function Get-EmulatorInstanceName {
     param([string]$deviceInfo)
 

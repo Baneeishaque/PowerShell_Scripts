@@ -1,3 +1,4 @@
+#!pwsh
 # Usage: .\cherry_pick_commits.ps1 <source_repo> <source_branch> <target_repo> <target_branch>
 
 param (

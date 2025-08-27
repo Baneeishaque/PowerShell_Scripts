@@ -1,3 +1,4 @@
+#!pwsh
 function Save-ModuleInfo {
     param(
         [string]$path = $PSScriptRoot

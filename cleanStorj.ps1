@@ -1,3 +1,4 @@
+#!pwsh
 # TODO : Use CommandLine Arguments for $rcloneConfiguartionPath
 $rcloneConfiguartionPath = "C:\Lab_Data\configurations-private\rclone.conf"
 # $iterationCount = 0;

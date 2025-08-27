@@ -1,3 +1,4 @@
+#!pwsh
 $scriptDirectory = Split-Path -Parent $PSCommandPath
 
 # Dot source the script file that contains the function

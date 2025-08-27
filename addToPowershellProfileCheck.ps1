@@ -1,3 +1,4 @@
+#!pwsh
 $dir = "test"
 $PROFILE2 = Test.txt
 Add-Content -Path $PROFILE2 -Value "`n# rbenv for Windows"

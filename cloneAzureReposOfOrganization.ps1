@@ -1,3 +1,4 @@
+#!pwsh
 # Log in to Azure DevOps
 # az devops login
 
