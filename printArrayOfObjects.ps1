@@ -1,3 +1,4 @@
+#!pwsh
 # Run the scoop cache show command and store the output in a variable
 $output = & "$(scoop prefix scoop)\bin\scoop.ps1" list
 # $output = scoop list

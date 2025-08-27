@@ -1,3 +1,4 @@
+#!pwsh
 $result="SELECT * FROM ``ticket`` WHERE ``agent`` IN ("
 $i=0
 foreach($line in Get-Content '.\read text file sample.txt') {

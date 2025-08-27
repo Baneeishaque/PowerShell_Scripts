@@ -1,3 +1,4 @@
+#!pwsh
 $scriptDirectory = Split-Path -Parent $PSCommandPath
 
 . "$scriptDirectory\Get-FileExtensionsAndNoExtensions.ps1"

@@ -1,3 +1,4 @@
+#!pwsh
 ## Using Invoke-RestMethod
 $webData = Invoke-RestMethod -Uri "https://api.github.com/repos/PowerShell/PowerShell/releases/latest"
 

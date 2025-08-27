@@ -1,3 +1,4 @@
+#!pwsh
 function Get-FileExtensionsAndNoExtensions {
     param([string]$folderPath = (Get-Location).Path)
 

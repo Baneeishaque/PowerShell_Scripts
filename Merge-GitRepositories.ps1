@@ -1,3 +1,4 @@
+#!pwsh
 <#
 .SYNOPSIS
     Merges multiple git repositories into a new repo, preserving commit history and resolving file name conflicts.

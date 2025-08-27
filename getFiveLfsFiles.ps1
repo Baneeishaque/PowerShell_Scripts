@@ -1,3 +1,4 @@
+#!pwsh
 $entries = git lfs ls-files -l
 $counter = 0
 

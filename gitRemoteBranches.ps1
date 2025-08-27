@@ -1,3 +1,4 @@
+#!pwsh
 $branches = git for-each-ref --format='%(refname:short)' refs/remotes/origin
 # Write-Output $branches
 foreach ($branch in $branches)
