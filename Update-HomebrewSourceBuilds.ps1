@@ -57,19 +57,19 @@
 param(
     [Parameter(HelpMessage = "Force rebuild all source-built formulas even if up-to-date")]
     [switch]$Force,
-    
+
     [Parameter(HelpMessage = "Only list formulas without updating them")]
     [switch]$ListOnly,
-    
+
     [Parameter(HelpMessage = "Skip the initial brew update step")]
     [switch]$SkipUpdate,
-    
+
     [Parameter(HelpMessage = "Skip greedy cask updates")]
     [switch]$SkipGreedy,
-    
+
     [Parameter(HelpMessage = "Skip cleanup after updates")]
     [switch]$SkipCleanup,
-    
+
     [Parameter(HelpMessage = "Run silently without output")]
     [switch]$Quiet
 )
@@ -86,14 +86,14 @@ function Get-HeadFormulas {
     [CmdletBinding()]
     [OutputType([string[]])]
     param()
-    
+
     Write-Message "🔍 Identifying HEAD version formulas..." "Cyan" -Quiet:$Quiet
-    
+
     try {
         $headFormulas = brew list --versions | Select-String "HEAD-" | ForEach-Object {
             ($_ -split '\s+')[0]
         }
-        
+
         if ($headFormulas) {
             $count = ($headFormulas | Measure-Object).Count
             Write-Message "Found $count HEAD formulas:" "Green" -Quiet:$Quiet
@@ -120,23 +120,23 @@ function Get-SourceBuiltFormulas {
         [Parameter(Mandatory = $false)]
         [string[]]$ExcludeFormulas = @()
     )
-    
+
     Write-Message "🔍 Identifying source-built formulas..." "Cyan" -Quiet:$Quiet
-    
+
     try {
         # Get formulas that were not built as bottles (i.e., built from source)
         $sourceFormulasJson = & brew info --installed --json
         if ($LASTEXITCODE -ne 0) {
             throw "Failed to get Homebrew formula information"
         }
-        
-        $allSourceFormulas = $sourceFormulasJson | ConvertFrom-Json | Where-Object { 
-            $_.installed[0].built_as_bottle -eq $false 
+
+        $allSourceFormulas = $sourceFormulasJson | ConvertFrom-Json | Where-Object {
+            $_.installed[0].built_as_bottle -eq $false
         } | Select-Object -ExpandProperty name
-        
+
         # Filter out excluded formulas (like HEAD versions) to avoid duplicates
         $sourceFormulas = $allSourceFormulas | Where-Object { $_ -notin $ExcludeFormulas }
-        
+
         if ($sourceFormulas) {
             $count = ($sourceFormulas | Measure-Object).Count
             Write-Message "Found $count source-built formulas (excluding HEAD):" "Green" -Quiet:$Quiet
@@ -161,31 +161,31 @@ function Update-SourceFormulas {
     param(
         [Parameter(Mandatory = $true)]
         [string[]]$Formulas,
-        
+
         [Parameter(Mandatory = $false)]
         [bool]$ForceRebuild = $false
     )
-    
+
     if ($Formulas.Count -eq 0) {
         Write-Message "No formulas to update." "Yellow" -Quiet:$Quiet
         return
     }
-    
+
     $action = if ($ForceRebuild) { "reinstall" } else { "upgrade" }
     $actionDescription = if ($ForceRebuild) { "Force rebuilding" } else { "Updating" }
-    
+
     Write-Message "🔨 $actionDescription source-built formulas with verbose logging..." "Cyan" -Quiet:$Quiet
-    
+
     foreach ($formula in $Formulas) {
         Write-Message "📦 $actionDescription $formula..." "Magenta" -Quiet:$Quiet
-        
+
         try {
             if ($ForceRebuild) {
                 & brew reinstall $formula --build-from-source --verbose
             } else {
                 & brew upgrade $formula --build-from-source --verbose
             }
-            
+
             if ($LASTEXITCODE -eq 0) {
                 Write-Message "✅ Successfully processed $formula" "Green" -Quiet:$Quiet
             } else {
@@ -202,13 +202,13 @@ function Update-SourceFormulas {
 try {
     Write-Message "🍺 Comprehensive Homebrew Updater" "Green" -Quiet:$Quiet
     Write-Message "=================================" "Green" -Quiet:$Quiet
-    
+
     # Check if Homebrew is available using reusable function
     if (-not (Test-CommandExists "brew")) {
         Write-Message "❌ Homebrew not found in PATH. Please install Homebrew first." "Red" -Quiet:$Quiet
         exit 1
     }
-    
+
     # Step 1: Update Homebrew itself and formulae/casks definitions
     if (-not $SkipUpdate) {
         Write-Message "📥 Updating Homebrew and formulae definitions..." "Cyan" -Quiet:$Quiet
@@ -219,12 +219,12 @@ try {
     } else {
         Write-Message "⏭️ Skipping brew update (--SkipUpdate specified)" "Yellow" -Quiet:$Quiet
     }
-    
+
     # Step 2: Get all formula types
     Write-Message "📋 Analyzing installed formulas..." "Cyan" -Quiet:$Quiet
     $headFormulas = Get-HeadFormulas
     $sourceFormulas = Get-SourceBuiltFormulas -ExcludeFormulas $headFormulas
-    
+
     if ($ListOnly) {
         Write-Message "📋 List-only mode - no updates performed." "Cyan" -Quiet:$Quiet
         Write-Message "📊 Summary:" "Cyan" -Quiet:$Quiet
@@ -232,7 +232,7 @@ try {
         Write-Message "   • Source-built formulas: $($sourceFormulas.Count)" "White" -Quiet:$Quiet
         return
     }
-    
+
     # Step 3: Update HEAD formulas first (they include latest development versions)
     if ($headFormulas.Count -gt 0) {
         Write-Message "🚀 Updating HEAD formulas (latest development versions)..." "Cyan" -Quiet:$Quiet
@@ -251,12 +251,12 @@ try {
             }
         }
     }
-    
+
     # Step 4: Update source-built formulas
     if ($sourceFormulas.Count -gt 0) {
         Update-SourceFormulas -Formulas $sourceFormulas -ForceRebuild $Force.IsPresent
     }
-    
+
     # Step 5: Update all remaining formulas (regular bottle installs)
     Write-Message "🔄 Updating all remaining formulas..." "Cyan" -Quiet:$Quiet
     & brew upgrade --verbose
@@ -265,7 +265,7 @@ try {
     } else {
         Write-Message "⚠️ Some formula updates had issues" "Yellow" -Quiet:$Quiet
     }
-    
+
     # Step 6: Update all casks (including greedy ones)
     Write-Message "🖥️ Updating casks..." "Cyan" -Quiet:$Quiet
     if (-not $SkipGreedy) {
@@ -275,13 +275,13 @@ try {
         Write-Message "🔄 Updating casks (without greedy flag)..." "Cyan" -Quiet:$Quiet
         & brew upgrade --cask --verbose
     }
-    
+
     if ($LASTEXITCODE -eq 0) {
         Write-Message "✅ Cask updates completed" "Green" -Quiet:$Quiet
     } else {
         Write-Message "⚠️ Some cask updates had issues" "Yellow" -Quiet:$Quiet
     }
-    
+
     # Step 7: Cleanup (unless skipped)
     if (-not $SkipCleanup) {
         Write-Message "🧹 Cleaning up..." "Cyan" -Quiet:$Quiet
@@ -291,11 +291,11 @@ try {
     } else {
         Write-Message "⏭️ Skipping cleanup (--SkipCleanup specified)" "Yellow" -Quiet:$Quiet
     }
-    
+
     # Step 8: Final status
     Write-Message "🎉 Comprehensive Homebrew update completed!" "Green" -Quiet:$Quiet
     Write-Message "💡 Run 'brew doctor' to check for any issues" "Cyan" -Quiet:$Quiet
-    
+
     # Show summary
     Write-Message "📊 Update Summary:" "Cyan" -Quiet:$Quiet
     Write-Message "   • HEAD formulas: $($headFormulas.Count)" "White" -Quiet:$Quiet
