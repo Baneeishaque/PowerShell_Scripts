@@ -1,4 +1,4 @@
-#!pwsh-preview
+#!pwsh
 
 <#
 .SYNOPSIS

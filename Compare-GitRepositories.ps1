@@ -1,3 +1,4 @@
+#!pwsh
 <#
 .SYNOPSIS
     Compares commits in reference git repositories against a target repository.

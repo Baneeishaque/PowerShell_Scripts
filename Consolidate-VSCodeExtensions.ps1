@@ -1,4 +1,4 @@
-#!pwsh-preview
+#!pwsh
 <#
 .SYNOPSIS
     Consolidates .vscode/extensions.json files from first-level directories into a single extensions.json file.
