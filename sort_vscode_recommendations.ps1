@@ -45,12 +45,8 @@ try {
 
 if ($null -ne $extensionsJson.recommendations) {
     [array]$originalRecommendations = @($extensionsJson.recommendations)
-    [array]$sortedRecommendations = $originalRecommendations | Sort-Object
+    [array]$sortedRecommendations = $originalRecommendations | ForEach-Object { $_.ToLower() } | Sort-Object -Unique
 
-    if (-not (Compare-Object -ReferenceObject $originalRecommendations -DifferenceObject $sortedRecommendations -SyncWindow 0)) {
-        Write-Host "Recommendations in '$FilePath' are already sorted. No changes made."
-        exit 0
-    }
     $extensionsJson.recommendations = $sortedRecommendations
 } else {
     Write-Warning "Warning: No 'recommendations' property found in '$FilePath'."
